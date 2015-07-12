@@ -2,9 +2,6 @@
 /.gradle
 /build
 
-## ForgeGradle
-/run
-
 ## eclipse
 /.settings
 /.metadata
