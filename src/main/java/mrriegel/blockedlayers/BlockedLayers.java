@@ -17,6 +17,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.LanguageRegistry;
@@ -25,6 +26,7 @@ import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import mrriegel.blockedlayers.handler.LayerHandler16;
 import mrriegel.blockedlayers.handler.LayerHandler32;
 import mrriegel.blockedlayers.handler.LayerHandler64;
+import mrriegel.blockedlayers.handler.MyCommand;
 import mrriegel.blockedlayers.handler.SelfHandler16;
 import mrriegel.blockedlayers.handler.SelfHandler32;
 import mrriegel.blockedlayers.handler.SelfHandler64;
@@ -34,6 +36,7 @@ import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.packet.PacketSyncHandler;
 import mrriegel.blockedlayers.proxy.IProxy;
 import mrriegel.blockedlayers.reference.Reference;
+import mrriegel.blockedlayers.utility.Hashmaps;
 import mrriegel.blockedlayers.utility.MyUtils;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION)
@@ -67,30 +70,19 @@ public class BlockedLayers {
 				Side.CLIENT);
 
 		MyUtils.fillVectors();
-		System.out.println(names);
 
-		/* entity list */
-		final ClassLoader loader = Thread.currentThread()
-				.getContextClassLoader();
+		Hashmaps.initBlock();
+		Hashmaps.initEntity();
+		Hashmaps.initItem();
 
-		try {
-			for (final ClassPath.ClassInfo info : ClassPath.from(loader)
-					.getTopLevelClasses()) {
-				
-				if (info.getName().startsWith("net.minecraft.")) {
-					System.out.println("kacke "+info.load());
-					final Class<?> clazz = info.load();
-					if (EntityLivingBase.class.isAssignableFrom(clazz)) {
-						// System.out.println(clazz.getName());
-						entitys.add(clazz);
-					}
+	}
 
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	@Mod.EventHandler
+	public void serverLoad(FMLServerStartingEvent event) {
+
+		// register server commands
+
+		event.registerServerCommand(new MyCommand());
 	}
 
 	@Mod.EventHandler
