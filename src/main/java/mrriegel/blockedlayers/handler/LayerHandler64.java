@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.entity.PlayerInformation;
-import mrriegel.blockedlayers.init.ModBlocks;
 import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.utility.BlockLocation;
 import mrriegel.blockedlayers.utility.MyUtils;

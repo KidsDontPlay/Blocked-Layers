@@ -31,7 +31,6 @@ import mrriegel.blockedlayers.handler.SelfHandler16;
 import mrriegel.blockedlayers.handler.SelfHandler32;
 import mrriegel.blockedlayers.handler.SelfHandler64;
 import mrriegel.blockedlayers.handler.SyncHandler;
-import mrriegel.blockedlayers.init.ModBlocks;
 import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.packet.PacketSyncHandler;
 import mrriegel.blockedlayers.proxy.IProxy;
@@ -64,7 +63,6 @@ public class BlockedLayers {
 	public void preInit(FMLPreInitializationEvent event) {
 		ConfigurationHandler.init(event.getSuggestedConfigurationFile());
 
-		ModBlocks.init();
 		network = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID);
 		network.registerMessage(PacketSyncHandler.class, Packet.class, 0,
 				Side.CLIENT);
