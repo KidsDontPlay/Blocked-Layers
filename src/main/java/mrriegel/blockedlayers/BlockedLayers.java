@@ -1,5 +1,12 @@
 package mrriegel.blockedlayers;
 
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Vector;
+
+import com.google.common.reflect.ClassPath;
+
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.stats.Achievement;
 import net.minecraftforge.common.AchievementPage;
@@ -14,19 +21,20 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
-import mrriegel.blockedlayers.handler.ChallengeHandler16;
-import mrriegel.blockedlayers.handler.ChallengeHandler32;
-import mrriegel.blockedlayers.handler.ChallengeHandler64;
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import mrriegel.blockedlayers.handler.LayerHandler16;
 import mrriegel.blockedlayers.handler.LayerHandler32;
 import mrriegel.blockedlayers.handler.LayerHandler64;
+import mrriegel.blockedlayers.handler.SelfHandler16;
+import mrriegel.blockedlayers.handler.SelfHandler32;
+import mrriegel.blockedlayers.handler.SelfHandler64;
 import mrriegel.blockedlayers.handler.SyncHandler;
 import mrriegel.blockedlayers.init.ModBlocks;
 import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.packet.PacketSyncHandler;
 import mrriegel.blockedlayers.proxy.IProxy;
 import mrriegel.blockedlayers.reference.Reference;
+import mrriegel.blockedlayers.utility.MyUtils;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION)
 public class BlockedLayers {
@@ -39,6 +47,16 @@ public class BlockedLayers {
 
 	public static SimpleNetworkWrapper network;
 
+	public static Vector<Class> entitys = new Vector<Class>();
+
+	public static Vector<String> names = new Vector<String>();
+	public static Vector<String> layer = new Vector<String>();
+	public static Vector<String> doIt = new Vector<String>();
+	public static Vector<String> what = new Vector<String>();
+	public static Vector<String> number = new Vector<String>();
+	public static Vector<String> on = new Vector<String>();
+	public static Vector<String> type = new Vector<String>();
+
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		ConfigurationHandler.init(event.getSuggestedConfigurationFile());
@@ -47,6 +65,32 @@ public class BlockedLayers {
 		network = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID);
 		network.registerMessage(PacketSyncHandler.class, Packet.class, 0,
 				Side.CLIENT);
+
+		MyUtils.fillVectors();
+		System.out.println(names);
+
+		/* entity list */
+		final ClassLoader loader = Thread.currentThread()
+				.getContextClassLoader();
+
+		try {
+			for (final ClassPath.ClassInfo info : ClassPath.from(loader)
+					.getTopLevelClasses()) {
+				
+				if (info.getName().startsWith("net.minecraft.")) {
+					System.out.println("kacke "+info.load());
+					final Class<?> clazz = info.load();
+					if (EntityLivingBase.class.isAssignableFrom(clazz)) {
+						// System.out.println(clazz.getName());
+						entitys.add(clazz);
+					}
+
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Mod.EventHandler
@@ -59,12 +103,12 @@ public class BlockedLayers {
 		MinecraftForge.EVENT_BUS.register(new LayerHandler32());
 		MinecraftForge.EVENT_BUS.register(new LayerHandler16());
 
-		MinecraftForge.EVENT_BUS.register(new ChallengeHandler64());
-		MinecraftForge.EVENT_BUS.register(new ChallengeHandler32());
-		MinecraftForge.EVENT_BUS.register(new ChallengeHandler16());
-		FMLCommonHandler.instance().bus().register(new ChallengeHandler64());
-		FMLCommonHandler.instance().bus().register(new ChallengeHandler32());
-		FMLCommonHandler.instance().bus().register(new ChallengeHandler16());
+		MinecraftForge.EVENT_BUS.register(new SelfHandler64());
+		MinecraftForge.EVENT_BUS.register(new SelfHandler32());
+		MinecraftForge.EVENT_BUS.register(new SelfHandler16());
+		FMLCommonHandler.instance().bus().register(new SelfHandler64());
+		FMLCommonHandler.instance().bus().register(new SelfHandler32());
+		FMLCommonHandler.instance().bus().register(new SelfHandler16());
 
 		MinecraftForge.EVENT_BUS.register(new SyncHandler());
 

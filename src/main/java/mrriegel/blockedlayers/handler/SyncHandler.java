@@ -1,10 +1,16 @@
 package mrriegel.blockedlayers.handler;
 
+import java.io.IOException;
+import java.util.Vector;
+
+import com.google.common.reflect.ClassPath;
+
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.proxy.ServerProxy;
 import mrriegel.blockedlayers.utility.NBTHelper;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,6 +23,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 
 public class SyncHandler {
+	
 
 	@SubscribeEvent
 	public void onLivingDeathEvent(LivingDeathEvent event) {
@@ -62,6 +69,9 @@ public class SyncHandler {
 				BlockedLayers.network.sendTo(new Packet(player),
 						(EntityPlayerMP) player);
 			}
+
+			
+
 		}
 
 	}
