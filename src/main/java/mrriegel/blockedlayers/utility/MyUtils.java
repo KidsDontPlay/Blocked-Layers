@@ -56,18 +56,17 @@ public class MyUtils {
 					if (line.indexOf("(") != -1
 							&& line.substring(0, line.indexOf("(")).equals(
 									"addChallenge")) {
-
+						line = line.substring(line.indexOf("(") + 1,
+								line.indexOf(")"));
+						String[] parts = line.split(",");
+						BlockedLayers.names.add(parts[0]);
+						BlockedLayers.layer.add(parts[1]);
+						BlockedLayers.doIt.add(parts[2]);
+						BlockedLayers.what.add(parts[3]);
+						BlockedLayers.number.add(parts[4]);
+						BlockedLayers.on.add(parts[5]);
+						BlockedLayers.type.add(parts[6]);
 					}
-					line = line.substring(line.indexOf("(") + 1,
-							line.indexOf(")"));
-					String[] parts = line.split(",");
-					BlockedLayers.names.add(parts[0]);
-					BlockedLayers.layer.add(parts[1]);
-					BlockedLayers.doIt.add(parts[2]);
-					BlockedLayers.what.add(parts[3]);
-					BlockedLayers.number.add(parts[4]);
-					BlockedLayers.on.add(parts[5]);
-					BlockedLayers.type.add(parts[6]);
 
 				}
 			} catch (IOException e) {
