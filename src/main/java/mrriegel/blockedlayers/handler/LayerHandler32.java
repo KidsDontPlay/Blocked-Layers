@@ -1,26 +1,15 @@
 package mrriegel.blockedlayers.handler;
 
-import java.util.ArrayList;
-
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.packet.Packet;
-import mrriegel.blockedlayers.utility.BlockLocation;
-import mrriegel.blockedlayers.utility.MyUtils;
-import mrriegel.blockedlayers.utility.NBTHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class LayerHandler32 {
 	int layer = 32;

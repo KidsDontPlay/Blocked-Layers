@@ -1,26 +1,17 @@
 package mrriegel.blockedlayers.handler;
 
-import java.io.IOException;
-import java.util.Vector;
-
-import com.google.common.reflect.ClassPath;
-
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.proxy.ServerProxy;
-import mrriegel.blockedlayers.utility.NBTHelper;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
 
 public class SyncHandler {
 	

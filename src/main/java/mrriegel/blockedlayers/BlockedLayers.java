@@ -1,28 +1,7 @@
 package mrriegel.blockedlayers;
 
-import java.io.IOException;
-import java.util.LinkedList;
 import java.util.Vector;
 
-import com.google.common.reflect.ClassPath;
-
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.stats.Achievement;
-import net.minecraftforge.common.AchievementPage;
-import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.common.registry.LanguageRegistry;
-import cpw.mods.fml.relauncher.Side;
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import mrriegel.blockedlayers.handler.LayerHandler16;
 import mrriegel.blockedlayers.handler.LayerHandler32;
@@ -37,6 +16,17 @@ import mrriegel.blockedlayers.packet.PacketSyncHandler;
 import mrriegel.blockedlayers.proxy.IProxy;
 import mrriegel.blockedlayers.reference.Reference;
 import mrriegel.blockedlayers.utility.MyUtils;
+import net.minecraftforge.common.MinecraftForge;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION)
 public class BlockedLayers {
@@ -78,8 +68,6 @@ public class BlockedLayers {
 	@Mod.EventHandler
 	public void serverLoad(FMLServerStartingEvent event) {
 
-		// register server commands
-
 		event.registerServerCommand(new MyCommand());
 	}
 
@@ -101,10 +89,6 @@ public class BlockedLayers {
 		FMLCommonHandler.instance().bus().register(new SelfHandler16());
 
 		MinecraftForge.EVENT_BUS.register(new SyncHandler());
-
-		for (Object key : EntityList.stringToClassMapping.keySet()) {
-			System.out.println("nase: " + key);
-		}
 
 	}
 

@@ -9,12 +9,9 @@ import mrriegel.blockedlayers.entity.PlayerInformation;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
-import net.minecraftforge.event.CommandEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class MyCommand implements ICommand {
 
