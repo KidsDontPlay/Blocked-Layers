@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import com.google.common.reflect.ClassPath;
 
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.stats.Achievement;
@@ -35,7 +36,6 @@ import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.packet.PacketSyncHandler;
 import mrriegel.blockedlayers.proxy.IProxy;
 import mrriegel.blockedlayers.reference.Reference;
-import mrriegel.blockedlayers.utility.Hashmaps;
 import mrriegel.blockedlayers.utility.MyUtils;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION)
@@ -68,18 +68,10 @@ public class BlockedLayers {
 				Side.CLIENT);
 
 		MyUtils.fillVectors();
-		System.out.println("names: " + names);
-
-		Hashmaps.initBlock();
-		Hashmaps.initEntity();
-		Hashmaps.initItem();
 
 		SelfHandler64.init();
 		SelfHandler32.init();
 		SelfHandler16.init();
-		System.out.println("64n: " + SelfHandler64.names);
-		System.out.println("32n: " + SelfHandler32.names);
-		System.out.println("16n: " + SelfHandler16.names);
 
 	}
 
@@ -109,6 +101,10 @@ public class BlockedLayers {
 		FMLCommonHandler.instance().bus().register(new SelfHandler16());
 
 		MinecraftForge.EVENT_BUS.register(new SyncHandler());
+
+		for (Object key : EntityList.stringToClassMapping.keySet()) {
+			System.out.println("nase: " + key);
+		}
 
 	}
 

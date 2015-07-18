@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -118,6 +119,32 @@ public class MyCommand implements ICommand {
 							"Usage: /bl quest <64|32|16>"));
 				}
 
+			} else if (args[0].equals("reset")) {
+				if (args[1].equals("layer")) {
+					if (args[2].equals("64")) {
+						pro.setL64(false);
+						player.addChatMessage(new ChatComponentText("Layer "
+								+ args[2] + " reset."));
+					} else if (args[2].equals("32")) {
+						pro.setL32(false);
+						player.addChatMessage(new ChatComponentText("Layer "
+								+ args[2] + " reset."));
+					} else if (args[2].equals("16")) {
+						pro.setL16(false);
+						player.addChatMessage(new ChatComponentText("Layer "
+								+ args[2] + " reset."));
+					}
+
+				} else if (args[1].equals("quest")) {
+					if (BlockedLayers.names.contains(args[2])) {
+						pro.getBools().put(args[2], false);
+						player.addChatMessage(new ChatComponentText("Quest "
+								+ args[2] + " reset."));
+					}
+				} else {
+					player.addChatMessage(new ChatComponentText(
+							"Usage: /bl reset <layer|quest> <64|32|16|\"name\">"));
+				}
 			} else {
 				player.addChatMessage(new ChatComponentText(
 						"Usage: /bl <layer|quest>"));

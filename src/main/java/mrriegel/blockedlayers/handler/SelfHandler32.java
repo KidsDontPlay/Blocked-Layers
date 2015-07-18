@@ -22,13 +22,14 @@ import com.google.common.reflect.ClassPath;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.entity.PlayerInformation;
-import mrriegel.blockedlayers.utility.Hashmaps;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityGiantZombie;
@@ -69,7 +70,8 @@ public class SelfHandler32 {
 			if (!BlockedLayers.doIt.get(i).equals("eat")) {
 				continue;
 			}
-			Item target = Hashmaps.ItemHash.get(BlockedLayers.what.get(i));
+			Item target = GameRegistry.findItem("minecraft",
+					BlockedLayers.what.get(i));
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
 			String name = BlockedLayers.names.get(i);
@@ -105,7 +107,8 @@ public class SelfHandler32 {
 			}
 
 			String name = BlockedLayers.names.get(i);
-			Block target = Hashmaps.BlockHash.get(BlockedLayers.what.get(i));
+			Block target = GameRegistry.findBlock("minecraft",
+					BlockedLayers.what.get(i));
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
 
@@ -141,7 +144,8 @@ public class SelfHandler32 {
 			String upperName = BlockedLayers.what.get(i).substring(0, 1)
 					.toUpperCase()
 					+ BlockedLayers.what.get(i).substring(1);
-			Class target = Hashmaps.EntityHash.get(BlockedLayers.what.get(i));
+			Class target = (Class) EntityList.stringToClassMapping
+					.get(upperName);
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
 
@@ -181,12 +185,16 @@ public class SelfHandler32 {
 				continue;
 			}
 			String name = BlockedLayers.names.get(i);
-			Item target = Hashmaps.ItemHash.get(BlockedLayers.what.get(i));
+			Item target = GameRegistry.findItem("minecraft",
+					BlockedLayers.what.get(i));
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
 
-			Class classTarget = Hashmaps.EntityHash
-					.get(BlockedLayers.on.get(i));
+			String upperName = BlockedLayers.what.get(i).substring(0, 1)
+					.toUpperCase()
+					+ BlockedLayers.what.get(i).substring(1);
+			Class classTarget = (Class) EntityList.stringToClassMapping
+					.get(upperName);
 
 			EntityPlayer player = event.entityPlayer;
 			PlayerInformation pro = PlayerInformation.get(player);
@@ -223,12 +231,14 @@ public class SelfHandler32 {
 				continue;
 			}
 			String name = BlockedLayers.names.get(i);
-			Item target = Hashmaps.ItemHash.get(BlockedLayers.what.get(i));
+			Item target = GameRegistry.findItem("minecraft",
+					BlockedLayers.what.get(i));
 			ItemStack stack = event.crafting;
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
 
-			Block block = Hashmaps.BlockHash.get(BlockedLayers.what.get(i));
+			Block block = GameRegistry.findBlock("minecraft",
+					BlockedLayers.what.get(i));
 
 			EntityPlayer player = event.player;
 			PlayerInformation pro = PlayerInformation.get(player);
