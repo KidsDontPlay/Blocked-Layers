@@ -68,10 +68,18 @@ public class BlockedLayers {
 				Side.CLIENT);
 
 		MyUtils.fillVectors();
+		System.out.println("names: " + names);
 
 		Hashmaps.initBlock();
 		Hashmaps.initEntity();
 		Hashmaps.initItem();
+
+		SelfHandler64.init();
+		SelfHandler32.init();
+		SelfHandler16.init();
+		System.out.println("64n: " + SelfHandler64.names);
+		System.out.println("32n: " + SelfHandler32.names);
+		System.out.println("16n: " + SelfHandler16.names);
 
 	}
 

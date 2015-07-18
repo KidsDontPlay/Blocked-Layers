@@ -54,11 +54,7 @@ public class MyCommand implements ICommand {
 
 		if (sender instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) sender;
-			if (args.length != 1) {
-				player.addChatMessage(new ChatComponentText(
-						"Usage: /bl <layer|quest>"));
-				return;
-			}
+
 			PlayerInformation pro = PlayerInformation.get(player);
 			if (args[0].equals("layer")) {
 				player.addChatMessage(new ChatComponentText("Layer 64: "
@@ -68,13 +64,63 @@ public class MyCommand implements ICommand {
 				player.addChatMessage(new ChatComponentText("Layer 16: "
 						+ pro.isL16()));
 			} else if (args[0].equals("quest")) {
-				for (Entry<String, Boolean> entry : pro.getBools().entrySet()) {
-					player.addChatMessage(new ChatComponentText(entry.getKey()
-							.substring(0, 1).toUpperCase()
-							+ entry.getKey().substring(1)
-							+ ": "
-							+ entry.getValue()));
+				if (args.length == 1) {
+					for (Entry<String, Boolean> entry : pro.getBools()
+							.entrySet()) {
+						player.addChatMessage(new ChatComponentText(entry
+								.getKey().substring(0, 1).toUpperCase()
+								+ entry.getKey().substring(1)
+								+ ": "
+								+ entry.getValue()));
+					}
+					return;
+				} else if (args[1].equals("64")) {
+					for (Entry<String, Boolean> entry : pro.getBools()
+							.entrySet()) {
+						if (!SelfHandler64.names.contains(entry.getKey())) {
+							continue;
+						}
+						player.addChatMessage(new ChatComponentText(entry
+								.getKey().substring(0, 1).toUpperCase()
+								+ entry.getKey().substring(1)
+								+ ": "
+								+ entry.getValue()));
+					}
+					return;
+				} else if (args[1].equals("32")) {
+					for (Entry<String, Boolean> entry : pro.getBools()
+							.entrySet()) {
+						if (!SelfHandler32.names.contains(entry.getKey())) {
+							continue;
+						}
+						player.addChatMessage(new ChatComponentText(entry
+								.getKey().substring(0, 1).toUpperCase()
+								+ entry.getKey().substring(1)
+								+ ": "
+								+ entry.getValue()));
+					}
+					return;
+				} else if (args[1].equals("16")) {
+					for (Entry<String, Boolean> entry : pro.getBools()
+							.entrySet()) {
+						if (!SelfHandler16.names.contains(entry.getKey())) {
+							continue;
+						}
+						player.addChatMessage(new ChatComponentText(entry
+								.getKey().substring(0, 1).toUpperCase()
+								+ entry.getKey().substring(1)
+								+ ": "
+								+ entry.getValue()));
+					}
+					return;
+				} else {
+					player.addChatMessage(new ChatComponentText(
+							"Usage: /bl quest <64|32|16>"));
 				}
+
+			} else {
+				player.addChatMessage(new ChatComponentText(
+						"Usage: /bl <layer|quest>"));
 			}
 		}
 

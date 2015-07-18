@@ -49,6 +49,17 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 
 public class SelfHandler64 {
 
+	public static Vector<String> names = new Vector<String>();
+
+	public static void init() {
+		for (int i = 0; i < BlockedLayers.names.size(); i++) {
+			String name = BlockedLayers.names.get(i);
+			if (BlockedLayers.layer.get(i).equals("64")) {
+				names.add(name);
+			}
+		}
+	}
+
 	@SubscribeEvent
 	public void eatItem(PlayerUseItemEvent.Finish event) {
 		for (int i = 0; i < BlockedLayers.layer.size(); i++) {
@@ -265,13 +276,7 @@ public class SelfHandler64 {
 		World world = player.worldObj;
 
 		boolean ll64 = true;
-		Vector<String> names = new Vector<String>();
-		for (int i = 0; i < BlockedLayers.names.size(); i++) {
-			String name = BlockedLayers.names.get(i);
-			if (BlockedLayers.layer.get(i).equals("64")) {
-				names.add(name);
-			}
-		}
+		
 		if (names.size() == 0) {
 			ll64 = false;
 		}
