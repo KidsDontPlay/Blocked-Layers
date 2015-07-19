@@ -54,56 +54,39 @@ public class MyCommand implements ICommand {
 			EntityPlayer player = (EntityPlayer) sender;
 
 			PlayerInformation pro = PlayerInformation.get(player);
+			if (args[0] == null) {
+				player.addChatMessage(new ChatComponentText(
+						"Usage: /bl <layer|quest|reset>"));
+				return;
+			}
 			if (args[0].equals("layer")) {
-				player.addChatMessage(new ChatComponentText("Layer 64: "
-						+ pro.isL64()));
-				player.addChatMessage(new ChatComponentText("Layer 32: "
-						+ pro.isL32()));
-				player.addChatMessage(new ChatComponentText("Layer 16: "
-						+ pro.isL16()));
+				if (args.length == 1) {
+					for (Entry<String, Boolean> entry : pro.getLayerBools()
+							.entrySet()) {
+						player.addChatMessage(new ChatComponentText("Layer "
+								+ entry.getKey() + ": " + entry.getValue()));
+					}
+				} else {
+					for (Entry<String, Boolean> entry : pro.getLayerBools()
+							.entrySet()) {
+						if (args[1].equals(entry.getKey())) {
+							player.addChatMessage(new ChatComponentText(
+									"Layer "
+											+ entry.getKey().substring(0, 1)
+													.toUpperCase()
+											+ entry.getKey().substring(1)
+											+ ": " + entry.getValue()));
+							return;
+						}
+
+					}
+					player.addChatMessage(new ChatComponentText(
+							"No valid layer."));
+				}
 			} else if (args[0].equals("quest")) {
 				if (args.length == 1) {
-					for (Entry<String, Boolean> entry : pro.getBools()
+					for (Entry<String, Boolean> entry : pro.getQuestBools()
 							.entrySet()) {
-						player.addChatMessage(new ChatComponentText(entry
-								.getKey().substring(0, 1).toUpperCase()
-								+ entry.getKey().substring(1)
-								+ ": "
-								+ entry.getValue()));
-					}
-					return;
-				} else if (args[1].equals("64")) {
-					for (Entry<String, Boolean> entry : pro.getBools()
-							.entrySet()) {
-						if (!SelfHandler64.names.contains(entry.getKey())) {
-							continue;
-						}
-						player.addChatMessage(new ChatComponentText(entry
-								.getKey().substring(0, 1).toUpperCase()
-								+ entry.getKey().substring(1)
-								+ ": "
-								+ entry.getValue()));
-					}
-					return;
-				} else if (args[1].equals("32")) {
-					for (Entry<String, Boolean> entry : pro.getBools()
-							.entrySet()) {
-						if (!SelfHandler32.names.contains(entry.getKey())) {
-							continue;
-						}
-						player.addChatMessage(new ChatComponentText(entry
-								.getKey().substring(0, 1).toUpperCase()
-								+ entry.getKey().substring(1)
-								+ ": "
-								+ entry.getValue()));
-					}
-					return;
-				} else if (args[1].equals("16")) {
-					for (Entry<String, Boolean> entry : pro.getBools()
-							.entrySet()) {
-						if (!SelfHandler16.names.contains(entry.getKey())) {
-							continue;
-						}
 						player.addChatMessage(new ChatComponentText(entry
 								.getKey().substring(0, 1).toUpperCase()
 								+ entry.getKey().substring(1)
@@ -112,39 +95,59 @@ public class MyCommand implements ICommand {
 					}
 					return;
 				} else {
+					for (Entry<String, Boolean> entry : pro.getQuestBools()
+							.entrySet()) {
+						if (args[1].equals(entry.getKey())) {
+							player.addChatMessage(new ChatComponentText(entry
+									.getKey().substring(0, 1).toUpperCase()
+									+ entry.getKey().substring(1)
+									+ ": "
+									+ entry.getValue()));
+							return;
+						}
+					}
 					player.addChatMessage(new ChatComponentText(
-							"Usage: /bl quest <64|32|16>"));
+							"No valid quest."));
 				}
 
 			} else if (args[0].equals("reset")) {
-				if (args[1].equals("layer")) {
-					if (args[2].equals("64")) {
-						pro.setL64(false);
-						player.addChatMessage(new ChatComponentText("Layer "
-								+ args[2] + " reset."));
-					} else if (args[2].equals("32")) {
-						pro.setL32(false);
-						player.addChatMessage(new ChatComponentText("Layer "
-								+ args[2] + " reset."));
-					} else if (args[2].equals("16")) {
-						pro.setL16(false);
-						player.addChatMessage(new ChatComponentText("Layer "
-								+ args[2] + " reset."));
+				if (args.length == 1) {
+					player.addChatMessage(new ChatComponentText(
+							"Usage: /bl reset <layer|quest> <\"quest\"|\"name\">"));
+				} else if (args[1].equals("layer")) {
+					for (Entry<String, Boolean> entry : pro.getLayerBools()
+							.entrySet()) {
+						if (args.length == 2) {
+							player.addChatMessage(new ChatComponentText(
+									"Usage: /bl reset <layer|quest> <\"quest\"|\"name\">"));
+							return;
+						} else if (args[2].equals(entry.getKey())) {
+							entry.setValue(false);
+							player.addChatMessage(new ChatComponentText(
+									"Layer " + entry.getKey() + ": "
+											+ " reset."));
+						}
 					}
 
 				} else if (args[1].equals("quest")) {
 					if (BlockedLayers.names.contains(args[2])) {
-						pro.getBools().put(args[2], false);
+						if (args.length == 2) {
+							player.addChatMessage(new ChatComponentText(
+									"Usage: /bl reset <layer|quest> <\"quest\"|\"name\">"));
+							return;
+						} else
+							pro.getQuestBools().put(args[2], false);
+							pro.getQuestNums().put(args[2]+"Num", 0);
 						player.addChatMessage(new ChatComponentText("Quest "
 								+ args[2] + " reset."));
 					}
 				} else {
 					player.addChatMessage(new ChatComponentText(
-							"Usage: /bl reset <layer|quest> <64|32|16|\"name\">"));
+							"Usage: /bl reset <layer|quest> <\"quest\"|\"name\">"));
 				}
 			} else {
 				player.addChatMessage(new ChatComponentText(
-						"Usage: /bl <layer|quest>"));
+						"Usage: /bl <layer|quest|reset>"));
 			}
 		}
 

@@ -2,7 +2,6 @@ package mrriegel.blockedlayers.entity;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.proxy.ServerProxy;
@@ -17,18 +16,19 @@ public class PlayerInformation implements IExtendedEntityProperties {
 	public final static String EXT_PROP_NAME = "PlayerInformation";
 
 	private final EntityPlayer player;
-	private boolean l64, l32, l16;
-	private HashMap<String, Boolean> bools = new HashMap<String, Boolean>();
-	private HashMap<String, Integer> nums = new HashMap<String, Integer>();
+	private HashMap<String, Boolean> layerBools = new HashMap<String, Boolean>();
+	private HashMap<String, Boolean> questBools = new HashMap<String, Boolean>();
+	private HashMap<String, Integer> questNums = new HashMap<String, Integer>();
 
 	public PlayerInformation(EntityPlayer player) {
 		this.player = player;
-		this.l64 = false;
-		this.l32 = false;
-		this.l16 = false;
 		for (String s : BlockedLayers.names) {
-			bools.put(s, false);
-			nums.put(s + "Num", 0);
+
+			questBools.put(s, false);
+			questNums.put(s + "Num", 0);
+		}
+		for (String s : BlockedLayers.layer) {
+			layerBools.put(s, false);
 		}
 
 	}
@@ -46,12 +46,11 @@ public class PlayerInformation implements IExtendedEntityProperties {
 	public void saveNBTData(NBTTagCompound compound) {
 		NBTTagCompound properties = new NBTTagCompound();
 
-		properties.setBoolean("l64", this.l64);
-		properties.setBoolean("l32", this.l32);
-		properties.setBoolean("l16", this.l16);
+		for (Entry<String, Boolean> entry : layerBools.entrySet()) {
+			properties.setBoolean(entry.getKey(), entry.getValue());
+		}
 
-		for (Entry<String, Boolean> entry : bools.entrySet()) {
-
+		for (Entry<String, Boolean> entry : questBools.entrySet()) {
 			properties.setBoolean(entry.getKey(), entry.getValue());
 		}
 
@@ -59,7 +58,7 @@ public class PlayerInformation implements IExtendedEntityProperties {
 		// properties.setBoolean(key, bools.get(key));
 		// }
 
-		for (Entry<String, Integer> entry : nums.entrySet()) {
+		for (Entry<String, Integer> entry : questNums.entrySet()) {
 			properties.setInteger(entry.getKey(), entry.getValue());
 		}
 
@@ -71,14 +70,14 @@ public class PlayerInformation implements IExtendedEntityProperties {
 	public void loadNBTData(NBTTagCompound compound) {
 		NBTTagCompound properties = (NBTTagCompound) compound
 				.getTag(EXT_PROP_NAME);
-		this.l64 = properties.getBoolean("l64");
-		this.l32 = properties.getBoolean("l32");
-		this.l16 = properties.getBoolean("l16");
 
-		for (Entry<String, Boolean> entry : bools.entrySet()) {
+		for (Entry<String, Boolean> entry : layerBools.entrySet()) {
 			entry.setValue(properties.getBoolean(entry.getKey()));
 		}
-		for (Entry<String, Integer> entry : nums.entrySet()) {
+		for (Entry<String, Boolean> entry : questBools.entrySet()) {
+			entry.setValue(properties.getBoolean(entry.getKey()));
+		}
+		for (Entry<String, Integer> entry : questNums.entrySet()) {
 			entry.setValue(properties.getInteger(entry.getKey()));
 		}
 
@@ -110,43 +109,27 @@ public class PlayerInformation implements IExtendedEntityProperties {
 
 	}
 
-	public boolean isL64() {
-		return l64;
+	public HashMap<String, Boolean> getLayerBools() {
+		return layerBools;
 	}
 
-	public void setL64(boolean l64) {
-		this.l64 = l64;
+	public void setLayerBools(HashMap<String, Boolean> bools) {
+		this.layerBools = bools;
 	}
 
-	public boolean isL32() {
-		return l32;
+	public HashMap<String, Boolean> getQuestBools() {
+		return questBools;
 	}
 
-	public void setL32(boolean l32) {
-		this.l32 = l32;
+	public void setQuestBools(HashMap<String, Boolean> bools) {
+		this.questBools = bools;
 	}
 
-	public boolean isL16() {
-		return l16;
+	public HashMap<String, Integer> getQuestNums() {
+		return questNums;
 	}
 
-	public void setL16(boolean l16) {
-		this.l16 = l16;
-	}
-
-	public HashMap<String, Boolean> getBools() {
-		return bools;
-	}
-
-	public void setBools(HashMap<String, Boolean> bools) {
-		this.bools = bools;
-	}
-
-	public HashMap<String, Integer> getNums() {
-		return nums;
-	}
-
-	public void setNums(HashMap<String, Integer> nums) {
-		this.nums = nums;
+	public void setQuestNums(HashMap<String, Integer> nums) {
+		this.questNums = nums;
 	}
 }

@@ -3,13 +3,9 @@ package mrriegel.blockedlayers;
 import java.util.Vector;
 
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
-import mrriegel.blockedlayers.handler.LayerHandler16;
-import mrriegel.blockedlayers.handler.LayerHandler32;
-import mrriegel.blockedlayers.handler.LayerHandler64;
+import mrriegel.blockedlayers.handler.LayerHandler;
 import mrriegel.blockedlayers.handler.MyCommand;
-import mrriegel.blockedlayers.handler.SelfHandler16;
-import mrriegel.blockedlayers.handler.SelfHandler32;
-import mrriegel.blockedlayers.handler.SelfHandler64;
+import mrriegel.blockedlayers.handler.QuestHandler;
 import mrriegel.blockedlayers.handler.SyncHandler;
 import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.packet.PacketSyncHandler;
@@ -45,6 +41,8 @@ public class BlockedLayers {
 	public static Vector<String> layer = new Vector<String>();
 	public static Vector<String> doIt = new Vector<String>();
 	public static Vector<String> what = new Vector<String>();
+	public static Vector<String> modID = new Vector<String>();
+	public static Vector<String> meta = new Vector<String>();
 	public static Vector<String> number = new Vector<String>();
 	public static Vector<String> on = new Vector<String>();
 	public static Vector<String> type = new Vector<String>();
@@ -59,10 +57,6 @@ public class BlockedLayers {
 
 		MyUtils.fillVectors();
 
-		SelfHandler64.init();
-		SelfHandler32.init();
-		SelfHandler16.init();
-
 	}
 
 	@Mod.EventHandler
@@ -74,19 +68,10 @@ public class BlockedLayers {
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 
-		FMLCommonHandler.instance().bus().register(new LayerHandler64());
-		FMLCommonHandler.instance().bus().register(new LayerHandler32());
-		FMLCommonHandler.instance().bus().register(new LayerHandler16());
-		MinecraftForge.EVENT_BUS.register(new LayerHandler64());
-		MinecraftForge.EVENT_BUS.register(new LayerHandler32());
-		MinecraftForge.EVENT_BUS.register(new LayerHandler16());
+		MinecraftForge.EVENT_BUS.register(new LayerHandler());
 
-		MinecraftForge.EVENT_BUS.register(new SelfHandler64());
-		MinecraftForge.EVENT_BUS.register(new SelfHandler32());
-		MinecraftForge.EVENT_BUS.register(new SelfHandler16());
-		FMLCommonHandler.instance().bus().register(new SelfHandler64());
-		FMLCommonHandler.instance().bus().register(new SelfHandler32());
-		FMLCommonHandler.instance().bus().register(new SelfHandler16());
+		MinecraftForge.EVENT_BUS.register(new QuestHandler());
+		FMLCommonHandler.instance().bus().register(new QuestHandler());
 
 		MinecraftForge.EVENT_BUS.register(new SyncHandler());
 
