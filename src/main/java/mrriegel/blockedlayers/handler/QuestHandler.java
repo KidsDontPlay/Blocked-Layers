@@ -31,7 +31,7 @@ public class QuestHandler {
 			if (!BlockedLayers.doIt.get(i).equals("eat")) {
 				continue;
 			}
-			Item target = GameRegistry.findItem("minecraft",
+			Item target = GameRegistry.findItem(BlockedLayers.modID.get(i),
 					BlockedLayers.what.get(i));
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
@@ -63,9 +63,8 @@ public class QuestHandler {
 			if (!BlockedLayers.doIt.get(i).equals("break")) {
 				continue;
 			}
-
 			String name = BlockedLayers.names.get(i);
-			Block target = GameRegistry.findBlock("minecraft",
+			Block target = GameRegistry.findBlock(BlockedLayers.modID.get(i),
 					BlockedLayers.what.get(i));
 			int meta;
 			if (BlockedLayers.meta.get(i).equals("*")) {
@@ -184,7 +183,7 @@ public class QuestHandler {
 				continue;
 			}
 			String name = BlockedLayers.names.get(i);
-			Item target = GameRegistry.findItem("minecraft",
+			Item target = GameRegistry.findItem(BlockedLayers.modID.get(i),
 					BlockedLayers.what.get(i));
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
@@ -227,13 +226,13 @@ public class QuestHandler {
 				continue;
 			}
 			String name = BlockedLayers.names.get(i);
-			Item target = GameRegistry.findItem("minecraft",
+			Item target = GameRegistry.findItem(BlockedLayers.modID.get(i),
 					BlockedLayers.what.get(i));
 			ItemStack stack = event.crafting;
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
 
-			Block block = GameRegistry.findBlock("minecraft",
+			Block block = GameRegistry.findBlock(BlockedLayers.modID.get(i),
 					BlockedLayers.what.get(i));
 
 			EntityPlayer player = event.player;
