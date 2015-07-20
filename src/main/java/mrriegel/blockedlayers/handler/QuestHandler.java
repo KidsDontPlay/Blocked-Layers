@@ -188,9 +188,9 @@ public class QuestHandler {
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
 
-			String upperName = BlockedLayers.what.get(i).substring(0, 1)
+			String upperName = BlockedLayers.on.get(i).substring(0, 1)
 					.toUpperCase()
-					+ BlockedLayers.what.get(i).substring(1);
+					+ BlockedLayers.on.get(i).substring(1);
 			Class classTarget = (Class) EntityList.stringToClassMapping
 					.get(upperName);
 
@@ -200,6 +200,12 @@ public class QuestHandler {
 			if (player.worldObj.isRemote) {
 				return;
 			}
+			if (player.getCurrentEquippedItem() == null) {
+				return;
+			}
+			System.out.println("name: " + name);
+			System.out.println("classtagert: " + classTarget);
+			System.out.println("enttarget: " + entTarget);
 			if (classTarget.isInstance(entTarget)) {
 				if (player.getCurrentEquippedItem().getItem().equals(target)) {
 					if (!pro.getQuestBools().get(name)) {
