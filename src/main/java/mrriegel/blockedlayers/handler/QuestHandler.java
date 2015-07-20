@@ -203,9 +203,6 @@ public class QuestHandler {
 			if (player.getCurrentEquippedItem() == null) {
 				return;
 			}
-			System.out.println("name: " + name);
-			System.out.println("classtagert: " + classTarget);
-			System.out.println("enttarget: " + entTarget);
 			if (classTarget.isInstance(entTarget)) {
 				if (player.getCurrentEquippedItem().getItem().equals(target)) {
 					if (!pro.getQuestBools().get(name)) {
