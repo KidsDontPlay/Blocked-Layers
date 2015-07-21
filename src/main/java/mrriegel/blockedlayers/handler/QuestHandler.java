@@ -8,16 +8,21 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import net.minecraftforge.common.IShearable;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -174,37 +179,39 @@ public class QuestHandler {
 	}
 
 	@SubscribeEvent
-	public void use(EntityInteractEvent event) {
+	public void shear(EntityInteractEvent event) {
 		for (int i = 0; i < BlockedLayers.layer.size(); i++) {
-			if (!BlockedLayers.doIt.get(i).equals("use")) {
-				continue;
-			}
-			if (!BlockedLayers.type.get(i).equals("entity")) {
+			if (!BlockedLayers.doIt.get(i).equals("shear")) {
 				continue;
 			}
 			String name = BlockedLayers.names.get(i);
-			Item target = GameRegistry.findItem(BlockedLayers.modID.get(i),
-					BlockedLayers.what.get(i));
 
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
 
-			String upperName = BlockedLayers.on.get(i).substring(0, 1)
+			String upperName = BlockedLayers.what.get(i).substring(0, 1)
 					.toUpperCase()
-					+ BlockedLayers.on.get(i).substring(1);
+					+ BlockedLayers.what.get(i).substring(1);
 			Class classTarget = (Class) EntityList.stringToClassMapping
 					.get(upperName);
 
 			EntityPlayer player = event.entityPlayer;
 			PlayerInformation pro = PlayerInformation.get(player);
 			Entity entTarget = event.target;
+			if (!IShearable.class.isInstance(entTarget)) {
+				continue;
+			}
+			IShearable ish = (IShearable) entTarget;
+
 			if (player.worldObj.isRemote) {
-				return;
+				continue;
 			}
 			if (player.getCurrentEquippedItem() == null) {
-				return;
+				continue;
 			}
-			if (classTarget.isInstance(entTarget)) {
-				if (player.getCurrentEquippedItem().getItem().equals(target)) {
+			if (classTarget.isInstance(entTarget)
+					&& ish.isShearable(player.getCurrentEquippedItem(),
+							player.worldObj, 0, 0, 0)) {
+				if (player.getCurrentEquippedItem().getItem() instanceof ItemShears) {
 					if (!pro.getQuestBools().get(name)) {
 						pro.getQuestNums().put(name + "Num",
 								pro.getQuestNums().get(name + "Num") + 1);
@@ -237,6 +244,12 @@ public class QuestHandler {
 
 			Block block = GameRegistry.findBlock(BlockedLayers.modID.get(i),
 					BlockedLayers.what.get(i));
+			int meta;
+			if (BlockedLayers.meta.get(i).equals("*")) {
+				meta = event.crafting.getItemDamage();
+			} else {
+				meta = Integer.parseInt(BlockedLayers.meta.get(i));
+			}
 
 			EntityPlayer player = event.player;
 			PlayerInformation pro = PlayerInformation.get(player);
@@ -254,6 +267,7 @@ public class QuestHandler {
 						player.addChatMessage(new ChatComponentText(name
 								.substring(0, 1).toUpperCase()
 								+ name.substring(1) + " done!"));
+						continue;
 
 					}
 				}
@@ -261,8 +275,75 @@ public class QuestHandler {
 
 			ItemStack stackBlock = new ItemStack(block);
 			Item itemBlock = stackBlock.getItem();
-			if (!world.isRemote && BlockedLayers.type.get(i).equals("block")) {
+			if (!world.isRemote && BlockedLayers.type.get(i).equals("block")
+					&& event.crafting.getItemDamage() == meta) {
 				if (event.crafting.getItem().equals(itemBlock)
+						&& !pro.getQuestBools().get(name)) {
+					pro.getQuestNums().put(
+							name + "Num",
+							pro.getQuestNums().get(name + "Num")
+									+ stack.stackSize);
+					if (pro.getQuestNums().get(name + "Num") >= number) {
+						pro.getQuestBools().put(name, true);
+						player.addChatMessage(new ChatComponentText(name
+								.substring(0, 1).toUpperCase()
+								+ name.substring(1) + " done!"));
+
+					}
+				}
+			}
+
+		}
+	}
+
+	@SubscribeEvent
+	public void smelt(PlayerEvent.ItemSmeltedEvent event) {
+		for (int i = 0; i < BlockedLayers.layer.size(); i++) {
+			if (!BlockedLayers.doIt.get(i).equals("craft")) {
+				continue;
+			}
+			String name = BlockedLayers.names.get(i);
+			Item target = GameRegistry.findItem(BlockedLayers.modID.get(i),
+					BlockedLayers.what.get(i));
+			ItemStack stack = event.smelting;
+
+			int number = Integer.valueOf(BlockedLayers.number.get(i));
+
+			Block block = GameRegistry.findBlock(BlockedLayers.modID.get(i),
+					BlockedLayers.what.get(i));
+			int meta;
+			if (BlockedLayers.meta.get(i).equals("*")) {
+				meta = event.smelting.getItemDamage();
+			} else {
+				meta = Integer.parseInt(BlockedLayers.meta.get(i));
+			}
+
+			EntityPlayer player = event.player;
+			PlayerInformation pro = PlayerInformation.get(player);
+			World world = player.worldObj;
+
+			if (!world.isRemote && BlockedLayers.type.get(i).equals("item")) {
+				if (event.smelting.getItem().equals(target)
+						&& !pro.getQuestBools().get(name)) {
+					pro.getQuestNums().put(
+							name + "Num",
+							pro.getQuestNums().get(name + "Num")
+									+ stack.stackSize);
+					if (pro.getQuestNums().get(name + "Num") >= number) {
+						pro.getQuestBools().put(name, true);
+						player.addChatMessage(new ChatComponentText(name
+								.substring(0, 1).toUpperCase()
+								+ name.substring(1) + " done!"));
+
+					}
+				}
+			}
+
+			ItemStack stackBlock = new ItemStack(block);
+			Item itemBlock = stackBlock.getItem();
+			if (!world.isRemote && BlockedLayers.type.get(i).equals("block")
+					&& event.smelting.getItemDamage() == meta) {
+				if (event.smelting.getItem().equals(itemBlock)
 						&& !pro.getQuestBools().get(name)) {
 					pro.getQuestNums().put(
 							name + "Num",

@@ -34,7 +34,7 @@ public class MyUtils {
 			try {
 				file.createNewFile();
 				PrintWriter pw = new PrintWriter(file, "UTF-8");
-				pw.println("#use: addChallenge(name,layer,activity,thing,modID,meta,quantity,onWhat,typeOfOnWhat)");
+				pw.println("#use: addChallenge(name,layer,activity,thing,modID,meta,quantity,onWhat,type)");
 				pw.println();
 				pw.close();
 			} catch (IOException e) {
@@ -66,8 +66,7 @@ public class MyUtils {
 						BlockedLayers.modID.add(parts[4]);
 						BlockedLayers.meta.add(parts[5]);
 						BlockedLayers.number.add(parts[6]);
-						BlockedLayers.on.add(parts[7]);
-						BlockedLayers.type.add(parts[8]);
+						BlockedLayers.type.add(parts[7]);
 
 					}
 
