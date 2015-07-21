@@ -7,6 +7,7 @@ import mrriegel.blockedlayers.handler.LayerHandler;
 import mrriegel.blockedlayers.handler.MyCommand;
 import mrriegel.blockedlayers.handler.QuestHandler;
 import mrriegel.blockedlayers.handler.SyncHandler;
+import mrriegel.blockedlayers.init.Init;
 import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.packet.PacketSyncHandler;
 import mrriegel.blockedlayers.proxy.IProxy;
@@ -54,7 +55,7 @@ public class BlockedLayers {
 		network.registerMessage(PacketSyncHandler.class, Packet.class, 0,
 				Side.CLIENT);
 
-		MyUtils.fillVectors();
+		Init.fillVectors();
 
 	}
 
