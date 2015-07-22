@@ -12,7 +12,6 @@ import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.packet.PacketSyncHandler;
 import mrriegel.blockedlayers.proxy.IProxy;
 import mrriegel.blockedlayers.reference.Reference;
-import mrriegel.blockedlayers.utility.MyUtils;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;

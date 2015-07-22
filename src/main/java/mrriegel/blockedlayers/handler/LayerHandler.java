@@ -32,7 +32,7 @@ public class LayerHandler {
 		for (Entry<String, Boolean> entry : pro.getLayerBools().entrySet()) {
 			int layer = Integer.parseInt(entry.getKey());
 			if (!world.isRemote && entry.getValue()) {
-				return;
+				continue;
 			}
 
 			if (!player.capabilities.isCreativeMode

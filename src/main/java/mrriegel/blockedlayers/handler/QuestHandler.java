@@ -8,8 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemShears;
@@ -22,7 +20,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -40,7 +37,8 @@ public class QuestHandler {
 					BlockedLayers.what.get(i));
 			int meta;
 			if (BlockedLayers.meta.get(i).equals("*")) {
-				meta = event.entityPlayer.getCurrentEquippedItem().getItemDamage();
+				meta = event.entityPlayer.getCurrentEquippedItem()
+						.getItemDamage();
 			} else {
 				meta = Integer.parseInt(BlockedLayers.meta.get(i));
 			}
@@ -50,7 +48,8 @@ public class QuestHandler {
 			PlayerInformation pro = PlayerInformation.get(player);
 
 			if (!player.worldObj.isRemote
-					&& player.getCurrentEquippedItem().getItem().equals(target)&&meta==player.getCurrentEquippedItem().getItemDamage()) {
+					&& player.getCurrentEquippedItem().getItem().equals(target)
+					&& meta == player.getCurrentEquippedItem().getItemDamage()) {
 				if (!pro.getQuestBools().get(name)) {
 					pro.getQuestNums().put(name + "Num",
 							pro.getQuestNums().get(name + "Num") + 1);
@@ -372,6 +371,8 @@ public class QuestHandler {
 		EntityPlayer player = event.entityPlayer;
 		PlayerInformation pro = PlayerInformation.get(player);
 		World world = player.worldObj;
+		if(world.isRemote) System.out.println("client: "+pro.getQuestBools());
+		if(!world.isRemote) System.out.println("server: "+pro.getQuestBools());
 		for (Entry<String, Boolean> entry : pro.getLayerBools().entrySet()) {
 			boolean ll = true;
 			for (int i = 0; i < BlockedLayers.layer.size(); i++) {
