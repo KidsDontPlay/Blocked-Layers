@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -259,7 +260,9 @@ public class QuestHandler {
 			PlayerInformation pro = PlayerInformation.get(player);
 			World world = player.worldObj;
 
-			if (!world.isRemote && BlockedLayers.type.get(i).equals("item")) {
+			if (!world.isRemote
+					&& Block.getBlockFromItem(event.crafting.getItem())
+							.getMaterial().equals(Material.air)) {
 				if (event.crafting.getItem().equals(target)
 						&& !pro.getQuestBools().get(name)) {
 					pro.getQuestNums().put(
@@ -279,7 +282,9 @@ public class QuestHandler {
 
 			ItemStack stackBlock = new ItemStack(block);
 			Item itemBlock = stackBlock.getItem();
-			if (!world.isRemote && BlockedLayers.type.get(i).equals("block")
+			if (!world.isRemote
+					&& !Block.getBlockFromItem(event.crafting.getItem())
+							.getMaterial().equals(Material.air)
 					&& event.crafting.getItemDamage() == meta) {
 				if (event.crafting.getItem().equals(itemBlock)
 						&& !pro.getQuestBools().get(name)) {
@@ -326,7 +331,9 @@ public class QuestHandler {
 			PlayerInformation pro = PlayerInformation.get(player);
 			World world = player.worldObj;
 
-			if (!world.isRemote && BlockedLayers.type.get(i).equals("item")) {
+			if (!world.isRemote
+					&& Block.getBlockFromItem(event.smelting.getItem())
+							.getMaterial().equals(Material.air)) {
 				if (event.smelting.getItem().equals(target)
 						&& !pro.getQuestBools().get(name)) {
 					pro.getQuestNums().put(
@@ -345,7 +352,9 @@ public class QuestHandler {
 
 			ItemStack stackBlock = new ItemStack(block);
 			Item itemBlock = stackBlock.getItem();
-			if (!world.isRemote && BlockedLayers.type.get(i).equals("block")
+			if (!world.isRemote
+					&& !Block.getBlockFromItem(event.smelting.getItem())
+							.getMaterial().equals(Material.air)
 					&& event.smelting.getItemDamage() == meta) {
 				if (event.smelting.getItem().equals(itemBlock)
 						&& !pro.getQuestBools().get(name)) {

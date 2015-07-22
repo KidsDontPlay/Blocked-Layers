@@ -42,7 +42,6 @@ public class BlockedLayers {
 	public static Vector<String> modID = new Vector<String>();
 	public static Vector<String> meta = new Vector<String>();
 	public static Vector<String> number = new Vector<String>();
-	public static Vector<String> type = new Vector<String>();
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {

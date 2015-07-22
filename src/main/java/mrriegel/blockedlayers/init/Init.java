@@ -49,7 +49,6 @@ public class Init {
 						BlockedLayers.modID.add(parts[4]);
 						BlockedLayers.meta.add(parts[5]);
 						BlockedLayers.number.add(parts[6]);
-						BlockedLayers.type.add(parts[7]);
 
 					}
 
