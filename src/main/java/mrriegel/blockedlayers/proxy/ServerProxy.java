@@ -31,6 +31,4 @@ public class ServerProxy extends CommonProxy implements IGuiHandler {
 	public static NBTTagCompound getEntityData(String name) {
 		return extendedEntityData.remove(name);
 	}
-
-
 }

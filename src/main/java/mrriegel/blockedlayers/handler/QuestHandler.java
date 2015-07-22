@@ -371,8 +371,6 @@ public class QuestHandler {
 		EntityPlayer player = event.entityPlayer;
 		PlayerInformation pro = PlayerInformation.get(player);
 		World world = player.worldObj;
-		if(world.isRemote) System.out.println("client: "+pro.getQuestBools());
-		if(!world.isRemote) System.out.println("server: "+pro.getQuestBools());
 		for (Entry<String, Boolean> entry : pro.getLayerBools().entrySet()) {
 			boolean ll = true;
 			for (int i = 0; i < BlockedLayers.layer.size(); i++) {

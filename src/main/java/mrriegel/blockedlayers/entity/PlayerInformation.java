@@ -23,7 +23,6 @@ public class PlayerInformation implements IExtendedEntityProperties {
 	public PlayerInformation(EntityPlayer player) {
 		this.player = player;
 		for (String s : BlockedLayers.names) {
-
 			questBools.put(s, false);
 			questNums.put(s + "Num", 0);
 		}
@@ -53,10 +52,6 @@ public class PlayerInformation implements IExtendedEntityProperties {
 		for (Entry<String, Boolean> entry : questBools.entrySet()) {
 			properties.setBoolean(entry.getKey(), entry.getValue());
 		}
-
-		// for (String key : bools.keySet()) {
-		// properties.setBoolean(key, bools.get(key));
-		// }
 
 		for (Entry<String, Integer> entry : questNums.entrySet()) {
 			properties.setInteger(entry.getKey(), entry.getValue());
@@ -104,32 +99,33 @@ public class PlayerInformation implements IExtendedEntityProperties {
 		ServerProxy.storeEntityData(getSaveKey(player), savedData);
 	}
 
-	@Override
-	public void init(Entity entity, World world) {
-
-	}
-
 	public HashMap<String, Boolean> getLayerBools() {
 		return layerBools;
 	}
 
-	public void setLayerBools(HashMap<String, Boolean> bools) {
-		this.layerBools = bools;
+	public void setLayerBools(HashMap<String, Boolean> layerBools) {
+		this.layerBools = layerBools;
 	}
 
 	public HashMap<String, Boolean> getQuestBools() {
 		return questBools;
 	}
 
-	public void setQuestBools(HashMap<String, Boolean> bools) {
-		this.questBools = bools;
+	public void setQuestBools(HashMap<String, Boolean> questBools) {
+		this.questBools = questBools;
 	}
 
 	public HashMap<String, Integer> getQuestNums() {
 		return questNums;
 	}
 
-	public void setQuestNums(HashMap<String, Integer> nums) {
-		this.questNums = nums;
+	public void setQuestNums(HashMap<String, Integer> questNums) {
+		this.questNums = questNums;
 	}
+
+	@Override
+	public void init(Entity entity, World world) {
+
+	}
+
 }

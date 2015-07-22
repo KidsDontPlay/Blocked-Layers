@@ -7,24 +7,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class SyncHandler {
-
-	@SubscribeEvent
-	public void onLivingDeathEvent(LivingDeathEvent event) {
-		if (!event.entity.worldObj.isRemote
-				&& event.entity instanceof EntityPlayer) {
-			EntityPlayer player = (EntityPlayer) event.entity;
-			NBTTagCompound playerData = new NBTTagCompound();
-			((PlayerInformation) (player
-					.getExtendedProperties(PlayerInformation.EXT_PROP_NAME)))
-					.saveNBTData(playerData);
-			ServerProxy.storeEntityData(player.getCommandSenderName(),
-					playerData);
-			PlayerInformation.saveProxyData((EntityPlayer) event.entity);
-		}
-	}
 
 	@SubscribeEvent
 	public void onEntityConstructing(EntityConstructing event) {
@@ -37,20 +23,13 @@ public class SyncHandler {
 	}
 
 	@SubscribeEvent
-	public void respawn(EntityJoinWorldEvent event) {
-		if (!event.entity.worldObj.isRemote
-				&& event.entity instanceof EntityPlayer && !event.entity.isDead) {
-			EntityPlayer player = (EntityPlayer) event.entity;
-
-			NBTTagCompound playerData = ServerProxy.getEntityData(player
-					.getCommandSenderName());
-			if (playerData != null) {
-				(player.getExtendedProperties(PlayerInformation.EXT_PROP_NAME))
-						.loadNBTData(playerData);
-			}
-			PlayerInformation props = PlayerInformation.get(player);
-
-		}
+	public void onCloning(PlayerEvent.Clone event) {
+		PlayerInformation newInfo = PlayerInformation.get(event.entityPlayer);
+		PlayerInformation oldInfo = PlayerInformation.get(event.original);
+		newInfo.setLayerBools(oldInfo.getLayerBools());
+		newInfo.setQuestBools(oldInfo.getQuestBools());
+		newInfo.setQuestNums(oldInfo.getQuestNums());
 
 	}
+
 }
