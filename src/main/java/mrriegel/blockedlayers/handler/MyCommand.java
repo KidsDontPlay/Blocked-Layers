@@ -54,7 +54,7 @@ public class MyCommand implements ICommand {
 			EntityPlayer player = (EntityPlayer) sender;
 
 			PlayerInformation pro = PlayerInformation.get(player);
-			if (args[0] == null) {
+			if(args.length==0){
 				player.addChatMessage(new ChatComponentText(
 						"Usage: /bl <layer|quest|reset>"));
 				return;
