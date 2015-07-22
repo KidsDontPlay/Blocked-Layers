@@ -12,6 +12,7 @@ import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.packet.PacketSyncHandler;
 import mrriegel.blockedlayers.proxy.IProxy;
 import mrriegel.blockedlayers.reference.Reference;
+import net.minecraft.entity.EntityList;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -35,8 +36,6 @@ public class BlockedLayers {
 
 	public static SimpleNetworkWrapper network;
 
-	public static Vector<Class> entitys = new Vector<Class>();
-
 	public static Vector<String> names = new Vector<String>();
 	public static Vector<String> layer = new Vector<String>();
 	public static Vector<String> doIt = new Vector<String>();
@@ -55,7 +54,6 @@ public class BlockedLayers {
 				Side.CLIENT);
 
 		Init.fillVectors();
-
 	}
 
 	@Mod.EventHandler
