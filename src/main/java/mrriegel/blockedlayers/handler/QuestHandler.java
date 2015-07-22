@@ -38,14 +38,19 @@ public class QuestHandler {
 			}
 			Item target = GameRegistry.findItem(BlockedLayers.modID.get(i),
 					BlockedLayers.what.get(i));
-
+			int meta;
+			if (BlockedLayers.meta.get(i).equals("*")) {
+				meta = event.entityPlayer.getCurrentEquippedItem().getItemDamage();
+			} else {
+				meta = Integer.parseInt(BlockedLayers.meta.get(i));
+			}
 			int number = Integer.valueOf(BlockedLayers.number.get(i));
 			String name = BlockedLayers.names.get(i);
 			EntityPlayer player = event.entityPlayer;
 			PlayerInformation pro = PlayerInformation.get(player);
 
 			if (!player.worldObj.isRemote
-					&& player.getCurrentEquippedItem().getItem().equals(target)) {
+					&& player.getCurrentEquippedItem().getItem().equals(target)&&meta==player.getCurrentEquippedItem().getItemDamage()) {
 				if (!pro.getQuestBools().get(name)) {
 					pro.getQuestNums().put(name + "Num",
 							pro.getQuestNums().get(name + "Num") + 1);
