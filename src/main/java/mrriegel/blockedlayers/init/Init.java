@@ -17,11 +17,10 @@ public class Init {
 			try {
 				file.createNewFile();
 				PrintWriter pw = new PrintWriter(file, "UTF-8");
-				pw.println("#use: addChallenge(name,layer,activity,thing,modID,meta,quantity,type)");
+				pw.println("#use: addChallenge(name,layer,activity,thing,modID,meta,quantity)");
 				pw.println();
 				pw.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

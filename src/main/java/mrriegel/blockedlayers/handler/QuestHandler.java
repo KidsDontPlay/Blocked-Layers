@@ -121,7 +121,7 @@ public class QuestHandler {
 				int number = Integer.valueOf(BlockedLayers.number.get(i));
 
 				EntitySkeleton e = (EntitySkeleton) event.entity;
-				int meta = e.getSkeletonType();
+				int meta = Integer.parseInt(BlockedLayers.meta.get(i));
 				DamageSource source = event.source;
 
 				if (!e.worldObj.isRemote
@@ -262,7 +262,8 @@ public class QuestHandler {
 
 			if (!world.isRemote
 					&& Block.getBlockFromItem(event.crafting.getItem())
-							.getMaterial().equals(Material.air)) {
+							.getMaterial().equals(Material.air)
+					&& event.crafting.getItemDamage() == meta) {
 				if (event.crafting.getItem().equals(target)
 						&& !pro.getQuestBools().get(name)) {
 					pro.getQuestNums().put(
@@ -333,7 +334,8 @@ public class QuestHandler {
 
 			if (!world.isRemote
 					&& Block.getBlockFromItem(event.smelting.getItem())
-							.getMaterial().equals(Material.air)) {
+							.getMaterial().equals(Material.air)
+					&& event.smelting.getItemDamage() == meta) {
 				if (event.smelting.getItem().equals(target)
 						&& !pro.getQuestBools().get(name)) {
 					pro.getQuestNums().put(
