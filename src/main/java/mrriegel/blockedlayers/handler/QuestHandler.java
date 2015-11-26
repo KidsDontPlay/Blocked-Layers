@@ -30,7 +30,7 @@ public class QuestHandler {
 
 	@SubscribeEvent
 	public void eatItem(PlayerUseItemEvent.Finish event) {
-		for (int i = 0; i < BlockedLayers.layer.size(); i++) {
+		for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
 			if (!BlockedLayers.doIt.get(i).equals("eat")) {
 				continue;
 			}
@@ -69,7 +69,7 @@ public class QuestHandler {
 
 	@SubscribeEvent
 	public void breakBlock(BreakEvent event) {
-		for (int i = 0; i < BlockedLayers.layer.size(); i++) {
+		for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
 			if (!BlockedLayers.doIt.get(i).equals("break")) {
 				continue;
 			}
@@ -107,7 +107,7 @@ public class QuestHandler {
 	@SubscribeEvent
 	public void kill(LivingDeathEvent event) {
 		if (event.entity instanceof EntitySkeleton) {
-			for (int i = 0; i < BlockedLayers.layer.size(); i++) {
+			for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
 				if (!BlockedLayers.doIt.get(i).equals("kill")) {
 					continue;
 				}
@@ -145,7 +145,7 @@ public class QuestHandler {
 			}
 		} else {
 
-			for (int i = 0; i < BlockedLayers.layer.size(); i++) {
+			for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
 				if (!BlockedLayers.doIt.get(i).equals("kill")) {
 					continue;
 				}
@@ -185,7 +185,7 @@ public class QuestHandler {
 
 	@SubscribeEvent
 	public void shear(EntityInteractEvent event) {
-		for (int i = 0; i < BlockedLayers.layer.size(); i++) {
+		for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
 			if (!BlockedLayers.doIt.get(i).equals("shear")) {
 				continue;
 			}
@@ -236,7 +236,7 @@ public class QuestHandler {
 
 	@SubscribeEvent
 	public void craft(PlayerEvent.ItemCraftedEvent event) {
-		for (int i = 0; i < BlockedLayers.layer.size(); i++) {
+		for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
 			if (!BlockedLayers.doIt.get(i).equals("craft")) {
 				continue;
 			}
@@ -308,7 +308,7 @@ public class QuestHandler {
 
 	@SubscribeEvent
 	public void smelt(PlayerEvent.ItemSmeltedEvent event) {
-		for (int i = 0; i < BlockedLayers.layer.size(); i++) {
+		for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
 			if (!BlockedLayers.doIt.get(i).equals("craft")) {
 				continue;
 			}
@@ -384,7 +384,7 @@ public class QuestHandler {
 		World world = player.worldObj;
 		for (Entry<String, Boolean> entry : pro.getLayerBools().entrySet()) {
 			boolean ll = true;
-			for (int i = 0; i < BlockedLayers.layer.size(); i++) {
+			for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
 				String layer = entry.getKey();
 				if (BlockedLayers.layer.get(i).equals(layer)) {
 					if (!pro.getQuestBools().get(BlockedLayers.names.get(i))) {

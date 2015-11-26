@@ -1,18 +1,29 @@
 package mrriegel.blockedlayers;
 
-import java.util.Vector;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import mrriegel.blockedlayers.handler.LayerHandler;
 import mrriegel.blockedlayers.handler.MyCommand;
+import mrriegel.blockedlayers.handler.PacketHandler;
 import mrriegel.blockedlayers.handler.QuestHandler;
 import mrriegel.blockedlayers.handler.SyncHandler;
-import mrriegel.blockedlayers.init.Init;
 import mrriegel.blockedlayers.packet.Packet;
 import mrriegel.blockedlayers.packet.PacketSyncHandler;
 import mrriegel.blockedlayers.proxy.IProxy;
 import mrriegel.blockedlayers.reference.Reference;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.BlockEvent;
+
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -20,6 +31,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
@@ -34,30 +47,37 @@ public class BlockedLayers {
 	public static IProxy proxy;
 
 	public static SimpleNetworkWrapper network;
-
-	public static Vector<String> names = new Vector<String>();
-	public static Vector<String> layer = new Vector<String>();
-	public static Vector<String> doIt = new Vector<String>();
-	public static Vector<String> what = new Vector<String>();
-	public static Vector<String> modID = new Vector<String>();
-	public static Vector<String> meta = new Vector<String>();
-	public static Vector<String> number = new Vector<String>();
+	public ArrayList<Quest> questList;
 
 	@Mod.EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		ConfigurationHandler.init(event.getSuggestedConfigurationFile());
+	public void preInit(FMLPreInitializationEvent event) throws IOException {
+		File configDir = new File(event.getModConfigurationDirectory(),
+				"BlockedLayers");
+		ConfigurationHandler.load(new File(configDir, "config.cfg"));
 
-		network = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID);
-		network.registerMessage(PacketSyncHandler.class, Packet.class, 0,
-				Side.CLIENT);
+		File questFile = new File(configDir, "quests.json");
+		ArrayList<Quest> tmp = new ArrayList<Quest>();
+		tmp.add(new Quest("uni", "break", "block", "minecraft", 64, 0, 12));
+		tmp.add(new Quest("uniq", "breako", "tier", "AE2", 22, 2, 8));
+		if (!questFile.exists()) {
+			questFile.createNewFile();
+			FileWriter fw = new FileWriter(questFile);
+			fw.write(new Gson().toJson(tmp));
+			fw.close();
+		}
 
-		Init.fillVectors();
+		questList = new Gson().fromJson(new BufferedReader(new FileReader(
+				questFile)), new TypeToken<ArrayList<Quest>>() {
+		}.getType());
+
+		PacketHandler.init();
+
 	}
 
 	@Mod.EventHandler
 	public void serverLoad(FMLServerStartingEvent event) {
 
-		event.registerServerCommand(new MyCommand());
+		// event.registerServerCommand(new MyCommand());
 	}
 
 	@Mod.EventHandler
@@ -65,15 +85,29 @@ public class BlockedLayers {
 
 		MinecraftForge.EVENT_BUS.register(new LayerHandler());
 
-		MinecraftForge.EVENT_BUS.register(new QuestHandler());
-		FMLCommonHandler.instance().bus().register(new QuestHandler());
+		// MinecraftForge.EVENT_BUS.register(new QuestHandler());
+		// FMLCommonHandler.instance().bus().register(new QuestHandler());
 
 		MinecraftForge.EVENT_BUS.register(new SyncHandler());
+		MinecraftForge.EVENT_BUS.register(this);
+		FMLCommonHandler.instance().bus().register(this);
 
 	}
 
-	@Mod.EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-
+	@SubscribeEvent
+	public void bre(BlockEvent.BreakEvent e) {
+		if (!e.world.isRemote)
+			e.setCanceled(true);
 	}
+
+	@SubscribeEvent
+	public void cr(PlayerEvent.ItemCraftedEvent e) {
+		if (!e.player.worldObj.isRemote) {
+			ItemStack s = e.crafting.copy();
+			if (s.stackSize == 0)
+				s.stackSize += 1;
+			System.out.println(s.copy());
+		}
+	}
+
 }

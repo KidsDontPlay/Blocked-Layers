@@ -5,23 +5,20 @@ import java.io.File;
 import net.minecraftforge.common.config.Configuration;
 
 public class ConfigurationHandler {
-	public static Configuration configuration;
 
-	public static void init(File file) {
-		if (configuration == null) {
-			configuration = new Configuration(file);
-		}
-		try {
-			configuration.load();
+	public static Configuration config;
 
-		} catch (Exception e) {
-
-		} finally {
-			if (configuration.hasChanged()) {
-				configuration.save();
-			}
+	public static void refreshConfig() {
+		if (config.hasChanged()) {
+			config.save();
 		}
 
+	}
+
+	public static void load(File file) {
+		config = new Configuration(file);
+		config.load();
+		refreshConfig();
 	}
 
 }

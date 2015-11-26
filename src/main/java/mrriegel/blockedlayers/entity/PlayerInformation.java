@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.BlockedLayers;
+import mrriegel.blockedlayers.Quest;
 import mrriegel.blockedlayers.proxy.ServerProxy;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,18 +17,18 @@ public class PlayerInformation implements IExtendedEntityProperties {
 	public final static String EXT_PROP_NAME = "PlayerInformation";
 
 	private final EntityPlayer player;
-	private HashMap<String, Boolean> layerBools = new HashMap<String, Boolean>();
+	private HashMap<Integer, Boolean> layerBools = new HashMap<Integer, Boolean>();
 	private HashMap<String, Boolean> questBools = new HashMap<String, Boolean>();
 	private HashMap<String, Integer> questNums = new HashMap<String, Integer>();
 
 	public PlayerInformation(EntityPlayer player) {
 		this.player = player;
-		for (String s : BlockedLayers.names) {
-			questBools.put(s, false);
-			questNums.put(s + "Num", 0);
+		for (Quest q : BlockedLayers.instance.questList) {
+			questBools.put(q.getName(), false);
+			questNums.put(q.getName() + "Num", 0);
 		}
-		for (String s : BlockedLayers.layer) {
-			layerBools.put(s, false);
+		for (Quest q : BlockedLayers.instance.questList) {
+			layerBools.put(q.getLayer(), false);
 		}
 
 	}
@@ -45,8 +46,9 @@ public class PlayerInformation implements IExtendedEntityProperties {
 	public void saveNBTData(NBTTagCompound compound) {
 		NBTTagCompound properties = new NBTTagCompound();
 
-		for (Entry<String, Boolean> entry : layerBools.entrySet()) {
-			properties.setBoolean(entry.getKey(), entry.getValue());
+		for (Entry<Integer, Boolean> entry : layerBools.entrySet()) {
+			properties.setBoolean(String.valueOf(entry.getKey()),
+					entry.getValue());
 		}
 
 		for (Entry<String, Boolean> entry : questBools.entrySet()) {
@@ -66,8 +68,8 @@ public class PlayerInformation implements IExtendedEntityProperties {
 		NBTTagCompound properties = (NBTTagCompound) compound
 				.getTag(EXT_PROP_NAME);
 
-		for (Entry<String, Boolean> entry : layerBools.entrySet()) {
-			entry.setValue(properties.getBoolean(entry.getKey()));
+		for (Entry<Integer, Boolean> entry : layerBools.entrySet()) {
+			entry.setValue(properties.getBoolean(String.valueOf(entry.getKey())));
 		}
 		for (Entry<String, Boolean> entry : questBools.entrySet()) {
 			entry.setValue(properties.getBoolean(entry.getKey()));
@@ -99,11 +101,11 @@ public class PlayerInformation implements IExtendedEntityProperties {
 		ServerProxy.storeEntityData(getSaveKey(player), savedData);
 	}
 
-	public HashMap<String, Boolean> getLayerBools() {
+	public HashMap<Integer, Boolean> getLayerBools() {
 		return layerBools;
 	}
 
-	public void setLayerBools(HashMap<String, Boolean> layerBools) {
+	public void setLayerBools(HashMap<Integer, Boolean> layerBools) {
 		this.layerBools = layerBools;
 	}
 
