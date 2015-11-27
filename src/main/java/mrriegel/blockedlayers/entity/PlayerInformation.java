@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.Quest;
-import mrriegel.blockedlayers.proxy.ServerProxy;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,26 +15,24 @@ public class PlayerInformation implements IExtendedEntityProperties {
 
 	public final static String EXT_PROP_NAME = "PlayerInformation";
 
-	private final EntityPlayer player;
 	private HashMap<Integer, Boolean> layerBools = new HashMap<Integer, Boolean>();
 	private HashMap<String, Boolean> questBools = new HashMap<String, Boolean>();
 	private HashMap<String, Integer> questNums = new HashMap<String, Integer>();
+	private String team;
 
-	public PlayerInformation(EntityPlayer player) {
-		this.player = player;
+	public PlayerInformation() {
 		for (Quest q : BlockedLayers.instance.questList) {
 			questBools.put(q.getName(), false);
 			questNums.put(q.getName() + "Num", 0);
-		}
-		for (Quest q : BlockedLayers.instance.questList) {
 			layerBools.put(q.getLayer(), false);
 		}
+		team = "";
 
 	}
 
 	public static final void register(EntityPlayer player) {
 		player.registerExtendedProperties(PlayerInformation.EXT_PROP_NAME,
-				new PlayerInformation(player));
+				new PlayerInformation());
 	}
 
 	public static final PlayerInformation get(EntityPlayer player) {
@@ -45,7 +42,6 @@ public class PlayerInformation implements IExtendedEntityProperties {
 	@Override
 	public void saveNBTData(NBTTagCompound compound) {
 		NBTTagCompound properties = new NBTTagCompound();
-
 		for (Entry<Integer, Boolean> entry : layerBools.entrySet()) {
 			properties.setBoolean(String.valueOf(entry.getKey()),
 					entry.getValue());
@@ -60,6 +56,7 @@ public class PlayerInformation implements IExtendedEntityProperties {
 		}
 
 		compound.setTag(EXT_PROP_NAME, properties);
+		compound.setString("team", team);
 
 	}
 
@@ -77,28 +74,8 @@ public class PlayerInformation implements IExtendedEntityProperties {
 		for (Entry<String, Integer> entry : questNums.entrySet()) {
 			entry.setValue(properties.getInteger(entry.getKey()));
 		}
+		team = compound.getString("team");
 
-	}
-
-	private static final String getSaveKey(EntityPlayer player) {
-		return player.getCommandSenderName() + ":" + EXT_PROP_NAME;
-	}
-
-	public static final void loadProxyData(EntityPlayer player) {
-		PlayerInformation playerData = PlayerInformation.get(player);
-		NBTTagCompound savedData = ServerProxy
-				.getEntityData(getSaveKey(player));
-		if (savedData != null) {
-			playerData.loadNBTData(savedData);
-		}
-	}
-
-	public static final void saveProxyData(EntityPlayer player) {
-		PlayerInformation playerData = PlayerInformation.get(player);
-		NBTTagCompound savedData = new NBTTagCompound();
-
-		playerData.saveNBTData(savedData);
-		ServerProxy.storeEntityData(getSaveKey(player), savedData);
 	}
 
 	public HashMap<Integer, Boolean> getLayerBools() {
@@ -123,6 +100,14 @@ public class PlayerInformation implements IExtendedEntityProperties {
 
 	public void setQuestNums(HashMap<String, Integer> questNums) {
 		this.questNums = questNums;
+	}
+
+	public String getTeam() {
+		return team;
+	}
+
+	public void setTeam(String team) {
+		this.team = team;
 	}
 
 	@Override

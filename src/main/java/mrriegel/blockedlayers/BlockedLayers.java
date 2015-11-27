@@ -6,20 +6,20 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
-import mrriegel.blockedlayers.handler.LayerHandler;
-import mrriegel.blockedlayers.handler.MyCommand;
 import mrriegel.blockedlayers.handler.PacketHandler;
-import mrriegel.blockedlayers.handler.QuestHandler;
 import mrriegel.blockedlayers.handler.SyncHandler;
-import mrriegel.blockedlayers.packet.Packet;
-import mrriegel.blockedlayers.packet.PacketSyncHandler;
-import mrriegel.blockedlayers.proxy.IProxy;
+import mrriegel.blockedlayers.proxy.CommonProxy;
 import mrriegel.blockedlayers.reference.Reference;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import net.minecraftforge.oredict.OreDictionary;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -28,14 +28,11 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION)
 public class BlockedLayers {
@@ -43,11 +40,11 @@ public class BlockedLayers {
 	@Mod.Instance(Reference.MOD_ID)
 	public static BlockedLayers instance;
 
-	@SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS)
-	public static IProxy proxy;
+	@SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.COMMON_PROXY_CLASS)
+	public static CommonProxy proxy;
 
-	public static SimpleNetworkWrapper network;
 	public ArrayList<Quest> questList;
+	public ArrayList<Reward> rewardList;
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException {
@@ -70,8 +67,44 @@ public class BlockedLayers {
 				questFile)), new TypeToken<ArrayList<Quest>>() {
 		}.getType());
 
-		PacketHandler.init();
+		File rewardFile = new File(configDir, "rewards.json");
+		ArrayList<Reward> ttt = new ArrayList<Reward>();
+		ttt.add(new Reward(12, new ArrayList<String>(Arrays
+				.asList(new String[] { "kakck", "miea", "läu" }))));
+		ttt.add(new Reward(24, new ArrayList<String>(Arrays
+				.asList(new String[] { "mau", "erk" }))));
+		if (!rewardFile.exists()) {
+			rewardFile.createNewFile();
+			FileWriter fw = new FileWriter(rewardFile);
+			fw.write(new Gson().toJson(ttt));
+			fw.close();
+		}
 
+		rewardList = new Gson().fromJson(new BufferedReader(new FileReader(
+				rewardFile)), new TypeToken<ArrayList<Reward>>() {
+		}.getType());
+
+		PacketHandler.init();
+		HarvestDropsEvent g;
+
+	}
+
+	public static ItemStack string2Stack(String s) {
+		ItemStack stack=null;
+		if (StringUtils.countMatches(s, ":") == 3) {
+			stack = GameRegistry.findItemStack(s.split(":")[0],
+					s.split(":")[1], Integer.valueOf(s.split(":")[3]));
+			if (stack != null) {
+				stack.setItemDamage(Integer.valueOf(s.split(":")[2]));
+			}
+		} else if (StringUtils.countMatches(s, ":") == 1) {
+			if (OreDictionary.doesOreNameExist(s.split(":")[0])) {
+				stack = OreDictionary.getOres(s.split(":")[0]).get(0);
+				stack.stackSize = Integer.valueOf(s.split(":")[1]);
+			}
+		} else
+			throw new RuntimeException("wrong reward file");
+		return stack;
 	}
 
 	@Mod.EventHandler
@@ -83,7 +116,7 @@ public class BlockedLayers {
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 
-		MinecraftForge.EVENT_BUS.register(new LayerHandler());
+		// MinecraftForge.EVENT_BUS.register(new LayerHandler());
 
 		// MinecraftForge.EVENT_BUS.register(new QuestHandler());
 		// FMLCommonHandler.instance().bus().register(new QuestHandler());
@@ -95,9 +128,21 @@ public class BlockedLayers {
 	}
 
 	@SubscribeEvent
-	public void bre(BlockEvent.BreakEvent e) {
+	public void kill(LivingDeathEvent e) {
+		System.out.println(e.source.getSourceOfDamage());
+		System.out.println(e.source.getEntity());
+	}
+
+	// @SubscribeEvent
+	// public void bre(BlockEvent.BreakEvent e) {
+	// if (!e.world.isRemote)
+	// e.setCanceled(true);
+	// }
+
+	@SubscribeEvent
+	public void bre(HarvestDropsEvent e) {
 		if (!e.world.isRemote)
-			e.setCanceled(true);
+			System.out.println(e.drops);
 	}
 
 	@SubscribeEvent

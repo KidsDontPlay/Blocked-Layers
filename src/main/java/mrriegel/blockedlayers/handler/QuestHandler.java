@@ -382,12 +382,12 @@ public class QuestHandler {
 		EntityPlayer player = event.entityPlayer;
 		PlayerInformation pro = PlayerInformation.get(player);
 		World world = player.worldObj;
-		for (Entry<String, Boolean> entry : pro.getLayerBools().entrySet()) {
+		for (Entry<Integer, Boolean> entry : pro.getLayerBools().entrySet()) {
 			boolean ll = true;
 			for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
-				String layer = entry.getKey();
-				if (BlockedLayers.layer.get(i).equals(layer)) {
-					if (!pro.getQuestBools().get(BlockedLayers.names.get(i))) {
+				if (BlockedLayers.instance.questList.get(i).getLayer() == entry
+						.getKey()) {
+					if (!pro.getQuestBools().get(BlockedLayers.instance.questList.get(i).getName())) {
 						ll = false;
 						break;
 					}

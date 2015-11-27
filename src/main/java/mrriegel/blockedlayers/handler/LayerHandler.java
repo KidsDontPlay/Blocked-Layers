@@ -8,33 +8,33 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import net.minecraftforge.event.world.BlockEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class LayerHandler {
 
 	@SubscribeEvent
-	public void antiCheat(PlayerInteractEvent event) {
-		EntityPlayer player = event.entityPlayer;
-		PlayerInformation pro = PlayerInformation.get(player);
-		if (!event.action.equals(Action.LEFT_CLICK_BLOCK)) {
+	public void disallow(BlockEvent.BreakEvent event) {
+		if (event.world.isRemote || event.getPlayer() == null
+				|| event.getPlayer() instanceof FakePlayer
+				|| event.getPlayer().capabilities.isCreativeMode
+				|| event.world.provider.dimensionId != 0)
 			return;
-		}
-		World world = player.worldObj;
-		Block block = world.getBlock(event.x, event.y, event.z);
+
+		EntityPlayer player = event.getPlayer();
+		PlayerInformation pro = PlayerInformation.get(player);
 		for (Entry<Integer, Boolean> entry : pro.getLayerBools().entrySet()) {
-			int layer = entry.getKey();
-			if (!world.isRemote && entry.getValue()) {
+			if (entry.getValue()) {
 				continue;
 			}
-
-			if (!player.capabilities.isCreativeMode
-					&& world.provider.dimensionId == 0) {
-				if (!world.isRemote && event.y < layer + 1) {
-					event.setCanceled(true);
-				}
+			if (event.y < entry.getKey() + 1) {
+				event.setCanceled(true);
+				return;
 			}
+
 		}
 	}
 }
