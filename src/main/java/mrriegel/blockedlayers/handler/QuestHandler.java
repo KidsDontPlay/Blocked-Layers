@@ -1,8 +1,10 @@
 package mrriegel.blockedlayers.handler;
 
+import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.BlockedLayers;
+import mrriegel.blockedlayers.Reward;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -17,6 +19,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IShearable;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -387,7 +390,8 @@ public class QuestHandler {
 			for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
 				if (BlockedLayers.instance.questList.get(i).getLayer() == entry
 						.getKey()) {
-					if (!pro.getQuestBools().get(BlockedLayers.instance.questList.get(i).getName())) {
+					if (!pro.getQuestBools().get(
+							BlockedLayers.instance.questList.get(i).getName())) {
 						ll = false;
 						break;
 					}
@@ -399,6 +403,23 @@ public class QuestHandler {
 				pro.getLayerBools().put(entry.getKey(), true);
 				player.addChatMessage(new ChatComponentText("Layer "
 						+ entry.getKey() + " released!"));
+				MinecraftForge.EVENT_BUS.post(new QuestDoneEvent(player));
+				for (Reward r : BlockedLayers.instance.rewardList) {
+					if (r.getLayer() == entry.getKey()) {
+						ArrayList<ItemStack> tmp = new ArrayList<ItemStack>();
+						for (String s : r.getRewards()) {
+							if (BlockedLayers.string2Stack(s) != null)
+								tmp.add(BlockedLayers.string2Stack(s));
+						}
+						for (ItemStack s : tmp) {
+							if (!player.inventory.addItemStackToInventory(s
+									.copy()))
+								player.dropPlayerItemWithRandomChoice(s.copy(),
+										false);
+						}
+						break;
+					}
+				}
 			}
 		}
 	}

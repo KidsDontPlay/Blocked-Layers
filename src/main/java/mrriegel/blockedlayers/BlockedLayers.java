@@ -85,12 +85,11 @@ public class BlockedLayers {
 		}.getType());
 
 		PacketHandler.init();
-		HarvestDropsEvent g;
 
 	}
 
 	public static ItemStack string2Stack(String s) {
-		ItemStack stack=null;
+		ItemStack stack = null;
 		if (StringUtils.countMatches(s, ":") == 3) {
 			stack = GameRegistry.findItemStack(s.split(":")[0],
 					s.split(":")[1], Integer.valueOf(s.split(":")[3]));
@@ -104,6 +103,7 @@ public class BlockedLayers {
 			}
 		} else
 			throw new RuntimeException("wrong reward file");
+
 		return stack;
 	}
 
