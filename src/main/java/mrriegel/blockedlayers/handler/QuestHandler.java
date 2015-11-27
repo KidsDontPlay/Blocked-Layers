@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.Reward;
+import mrriegel.blockedlayers.Statics;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -12,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
@@ -403,7 +405,7 @@ public class QuestHandler {
 				pro.getLayerBools().put(entry.getKey(), true);
 				player.addChatMessage(new ChatComponentText("Layer "
 						+ entry.getKey() + " released!"));
-				MinecraftForge.EVENT_BUS.post(new QuestDoneEvent(player));
+				Statics.syncTeams((EntityPlayerMP) player);
 				for (Reward r : BlockedLayers.instance.rewardList) {
 					if (r.getLayer() == entry.getKey()) {
 						ArrayList<ItemStack> tmp = new ArrayList<ItemStack>();

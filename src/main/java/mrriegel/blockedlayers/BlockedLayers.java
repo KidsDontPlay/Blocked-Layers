@@ -9,13 +9,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
+import mrriegel.blockedlayers.handler.GuiHandler;
+import mrriegel.blockedlayers.handler.KeyHandler;
 import mrriegel.blockedlayers.handler.PacketHandler;
 import mrriegel.blockedlayers.handler.SyncHandler;
+import mrriegel.blockedlayers.packet.SyncClientPacket;
 import mrriegel.blockedlayers.proxy.CommonProxy;
 import mrriegel.blockedlayers.reference.Reference;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -32,6 +37,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION)
@@ -120,10 +126,12 @@ public class BlockedLayers {
 
 		// MinecraftForge.EVENT_BUS.register(new QuestHandler());
 		// FMLCommonHandler.instance().bus().register(new QuestHandler());
-
+		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
 		MinecraftForge.EVENT_BUS.register(new SyncHandler());
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLCommonHandler.instance().bus().register(this);
+		FMLCommonHandler.instance().bus().register(new KeyHandler());
+		proxy.registerHandlers();
 
 	}
 
@@ -133,11 +141,13 @@ public class BlockedLayers {
 		System.out.println(e.source.getEntity());
 	}
 
-	// @SubscribeEvent
-	// public void bre(BlockEvent.BreakEvent e) {
-	// if (!e.world.isRemote)
-	// e.setCanceled(true);
-	// }
+//	 @SubscribeEvent
+//	 public void bre(BlockEvent.BreakEvent e) {
+//	 if (!e.world.isRemote){
+//	 e.setCanceled(true);
+//		PacketHandler.INSTANCE.sendTo(new SyncClientPacket((EntityPlayerMP) e.getPlayer()),
+//				(EntityPlayerMP) e.getPlayer());}
+//	 }
 
 	@SubscribeEvent
 	public void bre(HarvestDropsEvent e) {
