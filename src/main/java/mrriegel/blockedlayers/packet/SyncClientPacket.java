@@ -40,7 +40,6 @@ public class SyncClientPacket implements IMessage,
 		pro.setLayerBools(message.layerBools);
 		pro.setQuestBools(message.questBools);
 		pro.setQuestNums(message.questNums);
-		System.out.println(message.questNums);
 		pro.setTeam(message.team);
 		return null;
 	}

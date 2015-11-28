@@ -7,16 +7,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import mrriegel.blockedlayers.handler.GuiHandler;
 import mrriegel.blockedlayers.handler.KeyHandler;
 import mrriegel.blockedlayers.handler.PacketHandler;
 import mrriegel.blockedlayers.handler.SyncHandler;
-import mrriegel.blockedlayers.packet.SyncClientPacket;
 import mrriegel.blockedlayers.proxy.CommonProxy;
 import mrriegel.blockedlayers.reference.Reference;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityList;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -33,6 +36,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -72,7 +76,12 @@ public class BlockedLayers {
 		questList = new Gson().fromJson(new BufferedReader(new FileReader(
 				questFile)), new TypeToken<ArrayList<Quest>>() {
 		}.getType());
-
+		Collections.sort(questList, new Comparator<Quest>() {
+			@Override
+			public int compare(Quest o1, Quest o2) {
+				return o1.layer > o2.layer ? -1 : 1;
+			}
+		});
 		File rewardFile = new File(configDir, "rewards.json");
 		ArrayList<Reward> ttt = new ArrayList<Reward>();
 		ttt.add(new Reward(12, new ArrayList<String>(Arrays
@@ -92,6 +101,27 @@ public class BlockedLayers {
 
 		PacketHandler.init();
 
+	}
+
+	void validate(ArrayList<Quest> lis) {
+
+		ArrayList<String> names = new ArrayList<String>();
+		for (Quest q : lis) {
+			if (names.contains(q.name))
+				throw new RuntimeException(q.name + " isn't unique");
+			names.add(q.name);
+			boolean item = false, block = false, entity = false;
+			if (GameRegistry.findItem(q.modID, q.object) != null)
+				item = true;
+			if (GameRegistry.findBlock(q.modID, q.object) != null)
+				block = true;
+			if (EntityList.stringToClassMapping.containsKey(q.object))
+				entity = true;
+			if (!item && !block && !entity)
+				throw new RuntimeException(q.object + " doesn't exist");
+			if (q.layer < 1 || q.layer > 255)
+				throw new RuntimeException("layer out of range 1-255");
+		}
 	}
 
 	public static ItemStack string2Stack(String s) {
@@ -135,19 +165,35 @@ public class BlockedLayers {
 
 	}
 
-	@SubscribeEvent
-	public void kill(LivingDeathEvent e) {
-		System.out.println(e.source.getSourceOfDamage());
-		System.out.println(e.source.getEntity());
+	@Mod.EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		// validate(questList);
 	}
 
-//	 @SubscribeEvent
-//	 public void bre(BlockEvent.BreakEvent e) {
-//	 if (!e.world.isRemote){
-//	 e.setCanceled(true);
-//		PacketHandler.INSTANCE.sendTo(new SyncClientPacket((EntityPlayerMP) e.getPlayer()),
-//				(EntityPlayerMP) e.getPlayer());}
-//	 }
+	@SubscribeEvent
+	public void kill(LivingDeathEvent e) {
+		// System.out.println(e.source.getEntity());
+	}
+
+	@SubscribeEvent
+	public void bre(BlockEvent.BreakEvent e) {
+		if (!e.world.isRemote) {
+			// e.setCanceled(true);
+			// PacketHandler.INSTANCE.sendTo(new SyncClientPacket(
+			// (EntityPlayerMP) e.getPlayer()), (EntityPlayerMP) e
+			// .getPlayer());
+			System.out.println(e.getPlayer()
+					.getCurrentEquippedItem());
+			
+			try {
+				Block d = Block.getBlockFromItem(e.getPlayer()
+						.getCurrentEquippedItem().getItem());
+				Item s=GameRegistry.findItem("minecraft", "brick_block");
+				System.out.println(new ItemStack(s).getDisplayName());
+			} catch (NullPointerException ef) {
+			}
+		}
+	}
 
 	@SubscribeEvent
 	public void bre(HarvestDropsEvent e) {
@@ -160,8 +206,8 @@ public class BlockedLayers {
 		if (!e.player.worldObj.isRemote) {
 			ItemStack s = e.crafting.copy();
 			if (s.stackSize == 0)
-				s.stackSize += 1;
-			System.out.println(s.copy());
+				s.stackSize = 1;
+			System.out.println(s);
 		}
 	}
 

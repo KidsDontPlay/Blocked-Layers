@@ -15,10 +15,9 @@ public class KeyPacket implements IMessage,
 
 	@Override
 	public IMessage onMessage(KeyPacket message, MessageContext ctx) {
-		PacketHandler.INSTANCE.sendTo(new SyncClientPacket(ctx.getServerHandler().playerEntity),
+		PacketHandler.INSTANCE.sendTo(
+				new SyncClientPacket(ctx.getServerHandler().playerEntity),
 				ctx.getServerHandler().playerEntity);
-		ctx.getServerHandler().playerEntity.openGui(BlockedLayers.instance, 0,
-				ctx.getServerHandler().playerEntity.worldObj, 0, 0, 0);
 		return null;
 	}
 

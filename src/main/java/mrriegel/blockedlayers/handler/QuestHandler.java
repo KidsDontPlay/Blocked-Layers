@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.BlockedLayers;
+import mrriegel.blockedlayers.Quest;
 import mrriegel.blockedlayers.Reward;
 import mrriegel.blockedlayers.Statics;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -21,12 +24,13 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IShearable;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -35,37 +39,34 @@ public class QuestHandler {
 
 	@SubscribeEvent
 	public void eatItem(PlayerUseItemEvent.Finish event) {
-		for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
-			if (!BlockedLayers.doIt.get(i).equals("eat")) {
+		if (event.entityPlayer.worldObj.isRemote)
+			return;
+		EntityPlayer player = event.entityPlayer;
+		PlayerInformation pro = PlayerInformation.get(player);
+		for (Quest q : BlockedLayers.instance.questList) {
+			String name = q.getName();
+			if (!q.getActivity().equals("eat") || pro.getQuestBools().get(name)) {
 				continue;
 			}
-			Item target = GameRegistry.findItem(BlockedLayers.modID.get(i),
-					BlockedLayers.what.get(i));
-			int meta;
-			if (BlockedLayers.meta.get(i).equals("*")) {
-				meta = event.entityPlayer.getCurrentEquippedItem()
-						.getItemDamage();
-			} else {
-				meta = Integer.parseInt(BlockedLayers.meta.get(i));
-			}
-			int number = Integer.valueOf(BlockedLayers.number.get(i));
-			String name = BlockedLayers.names.get(i);
-			EntityPlayer player = event.entityPlayer;
-			PlayerInformation pro = PlayerInformation.get(player);
+			ItemStack stack;
+			Item target = GameRegistry.findItem(q.getModID(), q.getObject());
+			if (q.getMeta() == -1)
+				stack = new ItemStack(target, 1, event.entityPlayer
+						.getCurrentEquippedItem().getItemDamage());
+			else
+				stack = new ItemStack(target, 1, q.getMeta());
 
-			if (!player.worldObj.isRemote
-					&& player.getCurrentEquippedItem().getItem().equals(target)
-					&& meta == player.getCurrentEquippedItem().getItemDamage()) {
-				if (!pro.getQuestBools().get(name)) {
-					pro.getQuestNums().put(name + "Num",
-							pro.getQuestNums().get(name + "Num") + 1);
-					if (pro.getQuestNums().get(name + "Num") == number) {
-						pro.getQuestBools().put(name, true);
-						player.addChatMessage(new ChatComponentText(name
-								.substring(0, 1).toUpperCase()
-								+ name.substring(1) + " done!"));
+			int number = q.getNumber();
 
-					}
+			if (player.getCurrentEquippedItem().isItemEqual(stack)) {
+				pro.getQuestNums().put(name + "Num",
+						pro.getQuestNums().get(name + "Num") + 1);
+				if (pro.getQuestNums().get(name + "Num") >= number) {
+					pro.getQuestBools().put(name, true);
+					player.addChatMessage(new ChatComponentText(name.substring(
+							0, 1).toUpperCase()
+							+ name.substring(1) + " done!"));
+
 				}
 			}
 		}
@@ -74,36 +75,37 @@ public class QuestHandler {
 
 	@SubscribeEvent
 	public void breakBlock(BreakEvent event) {
-		for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
-			if (!BlockedLayers.doIt.get(i).equals("break")) {
+		if (event.getPlayer().worldObj.isRemote)
+			return;
+		EntityPlayer player = event.getPlayer();
+		PlayerInformation pro = PlayerInformation.get(player);
+		for (Quest q : BlockedLayers.instance.questList) {
+			String name = q.getName();
+			if (!q.getActivity().equals("break")
+					|| pro.getQuestBools().get(name)
+					|| (ConfigurationHandler.onlySilk && EnchantmentHelper
+							.getSilkTouchModifier(player))) {
 				continue;
 			}
-			String name = BlockedLayers.names.get(i);
-			Block target = GameRegistry.findBlock(BlockedLayers.modID.get(i),
-					BlockedLayers.what.get(i));
+
+			Block target = GameRegistry.findBlock(q.getModID(), q.getObject());
 			int meta;
-			if (BlockedLayers.meta.get(i).equals("*")) {
+			if (q.getMeta() == -1) {
 				meta = event.blockMetadata;
 			} else {
-				meta = Integer.parseInt(BlockedLayers.meta.get(i));
+				meta = q.getMeta();
 			}
-			int number = Integer.valueOf(BlockedLayers.number.get(i));
+			int number = q.getNumber();
 
-			EntityPlayer player = event.getPlayer();
-			PlayerInformation pro = PlayerInformation.get(player);
+			if (event.block.equals(target) && event.blockMetadata == meta) {
+				pro.getQuestNums().put(name + "Num",
+						pro.getQuestNums().get(name + "Num") + 1);
+				if (pro.getQuestNums().get(name + "Num") >= number) {
+					pro.getQuestBools().put(name, true);
+					player.addChatMessage(new ChatComponentText(name.substring(
+							0, 1).toUpperCase()
+							+ name.substring(1) + " done!"));
 
-			if (!player.worldObj.isRemote && event.block.equals(target)
-					&& event.blockMetadata == meta) {
-				if (!pro.getQuestBools().get(name)) {
-					pro.getQuestNums().put(name + "Num",
-							pro.getQuestNums().get(name + "Num") + 1);
-					if (pro.getQuestNums().get(name + "Num") == number) {
-						pro.getQuestBools().put(name, true);
-						player.addChatMessage(new ChatComponentText(name
-								.substring(0, 1).toUpperCase()
-								+ name.substring(1) + " done!"));
-
-					}
 				}
 			}
 		}
@@ -111,77 +113,74 @@ public class QuestHandler {
 
 	@SubscribeEvent
 	public void kill(LivingDeathEvent event) {
-		if (event.entity instanceof EntitySkeleton) {
-			for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
-				if (!BlockedLayers.doIt.get(i).equals("kill")) {
-					continue;
-				}
-				String name = BlockedLayers.names.get(i);
-				String upperName = BlockedLayers.what.get(i).substring(0, 1)
-						.toUpperCase()
-						+ BlockedLayers.what.get(i).substring(1);
-				Class target = (Class) EntityList.stringToClassMapping
-						.get(upperName);
+		if (event.entityLiving.worldObj.isRemote
+				|| !(event.source.getEntity() instanceof EntityPlayer))
+			return;
+		EntityPlayer player = (EntityPlayer) event.source.getEntity();
+		PlayerInformation pro = PlayerInformation.get(player);
+		for (Quest q : BlockedLayers.instance.questList) {
+			String name = q.getName();
+			if (!q.getActivity().equals("kill")
+					|| pro.getQuestBools().get(name)) {
+				continue;
+			}
 
-				int number = Integer.valueOf(BlockedLayers.number.get(i));
+			Class target = (Class) EntityList.stringToClassMapping.get(q
+					.getObject());
 
-				EntitySkeleton e = (EntitySkeleton) event.entity;
-				int meta = Integer.parseInt(BlockedLayers.meta.get(i));
-				DamageSource source = event.source;
+			int number = q.getNumber();
+			int meta = q.getMeta();
+			Entity e = event.entity;
 
-				if (!e.worldObj.isRemote
-						&& source.getSourceOfDamage() instanceof EntityPlayer
-						&& target.isInstance(e) && e.getSkeletonType() == meta) {
-					EntityPlayer player = (EntityPlayer) source
-							.getSourceOfDamage();
-					PlayerInformation pro = PlayerInformation.get(player);
-					if (!pro.getQuestBools().get(name)) {
-						pro.getQuestNums().put(name + "Num",
-								pro.getQuestNums().get(name + "Num") + 1);
-						if (pro.getQuestNums().get(name + "Num") == number) {
-							pro.getQuestBools().put(name, true);
-							player.addChatMessage(new ChatComponentText(name
-									.substring(0, 1).toUpperCase()
-									+ name.substring(1) + " done!"));
+			if (target.isInstance(e)
+					&& (!(e instanceof EntitySkeleton) || ((EntitySkeleton) e)
+							.getSkeletonType() == meta)) {
+				pro.getQuestNums().put(name + "Num",
+						pro.getQuestNums().get(name + "Num") + 1);
+				if (pro.getQuestNums().get(name + "Num") == number) {
+					pro.getQuestBools().put(name, true);
+					player.addChatMessage(new ChatComponentText(name.substring(
+							0, 1).toUpperCase()
+							+ name.substring(1) + " done!"));
 
-						}
-					}
 				}
 			}
-		} else {
+		}
+	}
 
-			for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
-				if (!BlockedLayers.doIt.get(i).equals("kill")) {
-					continue;
-				}
-				String name = BlockedLayers.names.get(i);
-				String upperName = BlockedLayers.what.get(i).substring(0, 1)
-						.toUpperCase()
-						+ BlockedLayers.what.get(i).substring(1);
-				Class target = (Class) EntityList.stringToClassMapping
-						.get(upperName);
+	@SubscribeEvent
+	public void harvest(HarvestDropsEvent event) {
+		if (event.world.isRemote)
+			return;
+		EntityPlayer player = event.harvester;
+		PlayerInformation pro = PlayerInformation.get(player);
+		for (Quest q : BlockedLayers.instance.questList) {
+			String name = q.getName();
+			if (!q.getActivity().equals("harvest")
+					|| pro.getQuestBools().get(name)) {
+				continue;
+			}
+			ItemStack target = null;
+			Item targetItem = GameRegistry
+					.findItem(q.getModID(), q.getObject());
+			for (ItemStack stack : event.drops) {
+				int meta;
+				if (q.getMeta() == -1)
+					target = new ItemStack(targetItem, 1, stack.getItemDamage());
+				else
+					target = new ItemStack(targetItem, 1, q.getMeta());
+				int number = q.getNumber();
 
-				int number = Integer.valueOf(BlockedLayers.number.get(i));
+				if (target.isItemEqual(stack)) {
+					pro.getQuestNums().put(name + "Num",
+							pro.getQuestNums().get(name + "Num") + 1);
+					if (pro.getQuestNums().get(name + "Num") >= number) {
+						pro.getQuestBools().put(name, true);
+						player.addChatMessage(new ChatComponentText(name
+								.substring(0, 1).toUpperCase()
+								+ name.substring(1) + " done!"));
+						break;
 
-				Entity e = event.entity;
-				DamageSource source = event.source;
-
-				if (!e.worldObj.isRemote
-						&& source.getSourceOfDamage() instanceof EntityPlayer
-						&& target.isInstance(e)) {
-					EntityPlayer player = (EntityPlayer) source
-							.getSourceOfDamage();
-					PlayerInformation pro = PlayerInformation.get(player);
-					if (!pro.getQuestBools().get(name)) {
-						pro.getQuestNums().put(name + "Num",
-								pro.getQuestNums().get(name + "Num") + 1);
-						if (pro.getQuestNums().get(name + "Num") == number) {
-							pro.getQuestBools().put(name, true);
-							player.addChatMessage(new ChatComponentText(name
-									.substring(0, 1).toUpperCase()
-									+ name.substring(1) + " done!"));
-
-						}
 					}
 				}
 			}
@@ -189,53 +188,44 @@ public class QuestHandler {
 	}
 
 	@SubscribeEvent
-	public void shear(EntityInteractEvent event) {
-		for (int i = 0; i < BlockedLayers.instance.questList.size(); i++) {
-			if (!BlockedLayers.doIt.get(i).equals("shear")) {
+	public void loot(LivingDropsEvent event) {
+		if (event.entityLiving.worldObj.isRemote
+				|| !(event.source.getEntity() instanceof EntityPlayer))
+			return;
+		EntityPlayer player = (EntityPlayer) event.source.getEntity();
+		PlayerInformation pro = PlayerInformation.get(player);
+		for (Quest q : BlockedLayers.instance.questList) {
+			String name = q.getName();
+			if (!q.getActivity().equals("loot")
+					|| pro.getQuestBools().get(name)) {
 				continue;
 			}
-			String name = BlockedLayers.names.get(i);
 
-			int number = Integer.valueOf(BlockedLayers.number.get(i));
+			ItemStack target = null;
+			Item targetItem = GameRegistry
+					.findItem(q.getModID(), q.getObject());
+			for (EntityItem item : event.drops) {
+				ItemStack stack = item.getEntityItem().copy();
+				int meta;
+				if (q.getMeta() == -1)
+					target = new ItemStack(targetItem, 1, stack.getItemDamage());
+				else
+					target = new ItemStack(targetItem, 1, q.getMeta());
+				int number = q.getNumber();
 
-			String upperName = BlockedLayers.what.get(i).substring(0, 1)
-					.toUpperCase()
-					+ BlockedLayers.what.get(i).substring(1);
-			Class classTarget = (Class) EntityList.stringToClassMapping
-					.get(upperName);
+				if (target.isItemEqual(stack)) {
+					pro.getQuestNums().put(name + "Num",
+							pro.getQuestNums().get(name + "Num") + 1);
+					if (pro.getQuestNums().get(name + "Num") >= number) {
+						pro.getQuestBools().put(name, true);
+						player.addChatMessage(new ChatComponentText(name
+								.substring(0, 1).toUpperCase()
+								+ name.substring(1) + " done!"));
+						break;
 
-			EntityPlayer player = event.entityPlayer;
-			PlayerInformation pro = PlayerInformation.get(player);
-			Entity entTarget = event.target;
-			if (!IShearable.class.isInstance(entTarget)) {
-				continue;
-			}
-			IShearable ish = (IShearable) entTarget;
-
-			if (player.worldObj.isRemote) {
-				continue;
-			}
-			if (player.getCurrentEquippedItem() == null) {
-				continue;
-			}
-			if (classTarget.isInstance(entTarget)
-					&& ish.isShearable(player.getCurrentEquippedItem(),
-							player.worldObj, 0, 0, 0)) {
-				if (player.getCurrentEquippedItem().getItem() instanceof ItemShears) {
-					if (!pro.getQuestBools().get(name)) {
-						pro.getQuestNums().put(name + "Num",
-								pro.getQuestNums().get(name + "Num") + 1);
-						if (pro.getQuestNums().get(name + "Num") == number) {
-							pro.getQuestBools().put(name, true);
-							player.addChatMessage(new ChatComponentText(name
-									.substring(0, 1).toUpperCase()
-									+ name.substring(1) + " done!"));
-
-						}
 					}
 				}
 			}
-
 		}
 	}
 
@@ -383,7 +373,7 @@ public class QuestHandler {
 	}
 
 	@SubscribeEvent
-	public void last(PlayerInteractEvent event) {
+	public void release(PlayerInteractEvent event) {
 		EntityPlayer player = event.entityPlayer;
 		PlayerInformation pro = PlayerInformation.get(player);
 		World world = player.worldObj;
@@ -407,6 +397,8 @@ public class QuestHandler {
 						+ entry.getKey() + " released!"));
 				Statics.syncTeams((EntityPlayerMP) player);
 				for (Reward r : BlockedLayers.instance.rewardList) {
+					if (!ConfigurationHandler.reward)
+						break;
 					if (r.getLayer() == entry.getKey()) {
 						ArrayList<ItemStack> tmp = new ArrayList<ItemStack>();
 						for (String s : r.getRewards()) {
