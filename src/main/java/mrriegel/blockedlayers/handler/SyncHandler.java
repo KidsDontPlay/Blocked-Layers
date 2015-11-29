@@ -1,21 +1,14 @@
 package mrriegel.blockedlayers.handler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import mrriegel.blockedlayers.Statics;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.packet.SyncClientPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class SyncHandler {
@@ -34,8 +27,7 @@ public class SyncHandler {
 	@SubscribeEvent
 	public void join(EntityJoinWorldEvent e) {
 		if (e.entity instanceof EntityPlayerMP) {
-			PacketHandler.INSTANCE.sendTo(
-new SyncClientPacket(
+			PacketHandler.INSTANCE.sendTo(new SyncClientPacket(
 					(EntityPlayerMP) e.entity), (EntityPlayerMP) e.entity);
 			Statics.syncTeams((EntityPlayerMP) e.entity);
 		}

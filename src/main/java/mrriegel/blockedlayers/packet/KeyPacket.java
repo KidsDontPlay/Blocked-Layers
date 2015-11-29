@@ -1,8 +1,7 @@
 package mrriegel.blockedlayers.packet;
 
-import mrriegel.blockedlayers.BlockedLayers;
-import mrriegel.blockedlayers.handler.PacketHandler;
 import io.netty.buffer.ByteBuf;
+import mrriegel.blockedlayers.handler.PacketHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

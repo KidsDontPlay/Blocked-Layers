@@ -1,15 +1,16 @@
 package mrriegel.blockedlayers.packet;
 
-import java.util.HashMap;
+import io.netty.buffer.ByteBuf;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
+import java.util.HashMap;
 
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
+
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;

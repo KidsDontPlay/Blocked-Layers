@@ -2,8 +2,6 @@ package mrriegel.blockedlayers;
 
 import java.util.ArrayList;
 
-import net.minecraft.item.ItemStack;
-
 public class Reward {
 	int layer;
 	ArrayList<String> rewards;

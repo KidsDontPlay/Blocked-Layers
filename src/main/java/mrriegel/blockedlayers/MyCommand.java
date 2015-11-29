@@ -1,8 +1,6 @@
 package mrriegel.blockedlayers;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.handler.PacketHandler;

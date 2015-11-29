@@ -7,10 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 
-import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import mrriegel.blockedlayers.handler.GuiHandler;
 import mrriegel.blockedlayers.handler.KeyHandler;
@@ -20,10 +17,8 @@ import mrriegel.blockedlayers.handler.QuestHandler;
 import mrriegel.blockedlayers.handler.SyncHandler;
 import mrriegel.blockedlayers.proxy.CommonProxy;
 import mrriegel.blockedlayers.reference.Reference;
-import net.minecraft.block.Block;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -78,12 +73,7 @@ public class BlockedLayers {
 		questList = new Gson().fromJson(new BufferedReader(new FileReader(
 				questFile)), new TypeToken<ArrayList<Quest>>() {
 		}.getType());
-		Collections.sort(questList, new Comparator<Quest>() {
-			@Override
-			public int compare(Quest o1, Quest o2) {
-				return o1.layer > o2.layer ? -1 : 1;
-			}
-		});
+
 		File rewardFile = new File(configDir, "rewards.json");
 		ArrayList<Reward> ttt = new ArrayList<Reward>();
 		ttt.add(new Reward(12, new ArrayList<String>(Arrays

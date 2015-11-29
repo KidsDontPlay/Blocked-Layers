@@ -11,7 +11,8 @@ import net.minecraft.server.MinecraftServer;
 
 public class Statics {
 	public static void syncTeams(EntityPlayerMP player) {
-		if (!ConfigurationHandler.teams||player.worldObj.isRemote||PlayerInformation.get(player) == null)
+		if (!ConfigurationHandler.teams || player.worldObj.isRemote
+				|| PlayerInformation.get(player) == null)
 			return;
 		String ori = PlayerInformation.get(player).getTeam();
 		if (ori.equals(""))

@@ -1,13 +1,14 @@
 package mrriegel.blockedlayers.handler;
 
-import org.lwjgl.input.Keyboard;
-
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.packet.KeyPacket;
 import mrriegel.blockedlayers.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
+
+import org.lwjgl.input.Keyboard;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 
