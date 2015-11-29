@@ -10,21 +10,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
+import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import mrriegel.blockedlayers.handler.GuiHandler;
 import mrriegel.blockedlayers.handler.KeyHandler;
+import mrriegel.blockedlayers.handler.LayerHandler;
 import mrriegel.blockedlayers.handler.PacketHandler;
+import mrriegel.blockedlayers.handler.QuestHandler;
 import mrriegel.blockedlayers.handler.SyncHandler;
 import mrriegel.blockedlayers.proxy.CommonProxy;
 import mrriegel.blockedlayers.reference.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +43,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -104,12 +106,13 @@ public class BlockedLayers {
 	}
 
 	void validate(ArrayList<Quest> lis) {
-
 		ArrayList<String> names = new ArrayList<String>();
 		for (Quest q : lis) {
 			if (names.contains(q.name))
 				throw new RuntimeException(q.name + " isn't unique");
 			names.add(q.name);
+			if (q.name.length() > 10)
+				throw new RuntimeException(q.name + " is longer than 10");
 			boolean item = false, block = false, entity = false;
 			if (GameRegistry.findItem(q.modID, q.object) != null)
 				item = true;
@@ -144,18 +147,12 @@ public class BlockedLayers {
 	}
 
 	@Mod.EventHandler
-	public void serverLoad(FMLServerStartingEvent event) {
-
-		// event.registerServerCommand(new MyCommand());
-	}
-
-	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 
-		// MinecraftForge.EVENT_BUS.register(new LayerHandler());
+		MinecraftForge.EVENT_BUS.register(new LayerHandler());
 
-		// MinecraftForge.EVENT_BUS.register(new QuestHandler());
-		// FMLCommonHandler.instance().bus().register(new QuestHandler());
+		MinecraftForge.EVENT_BUS.register(new QuestHandler());
+		FMLCommonHandler.instance().bus().register(new QuestHandler());
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
 		MinecraftForge.EVENT_BUS.register(new SyncHandler());
 		MinecraftForge.EVENT_BUS.register(this);
@@ -166,13 +163,13 @@ public class BlockedLayers {
 	}
 
 	@Mod.EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		// validate(questList);
+	public void serverLoad(FMLServerStartingEvent event) {
+		event.registerServerCommand(new MyCommand());
 	}
 
-	@SubscribeEvent
-	public void kill(LivingDeathEvent e) {
-		// System.out.println(e.source.getEntity());
+	@Mod.EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		validate(questList);
 	}
 
 	@SubscribeEvent
@@ -182,32 +179,16 @@ public class BlockedLayers {
 			// PacketHandler.INSTANCE.sendTo(new SyncClientPacket(
 			// (EntityPlayerMP) e.getPlayer()), (EntityPlayerMP) e
 			// .getPlayer());
-			System.out.println(e.getPlayer()
-					.getCurrentEquippedItem());
-			
-			try {
-				Block d = Block.getBlockFromItem(e.getPlayer()
-						.getCurrentEquippedItem().getItem());
-				Item s=GameRegistry.findItem("minecraft", "brick_block");
-				System.out.println(new ItemStack(s).getDisplayName());
-			} catch (NullPointerException ef) {
-			}
+
 		}
 	}
 
 	@SubscribeEvent
-	public void bre(HarvestDropsEvent e) {
-		if (!e.world.isRemote)
-			System.out.println(e.drops);
-	}
-
-	@SubscribeEvent
-	public void cr(PlayerEvent.ItemCraftedEvent e) {
-		if (!e.player.worldObj.isRemote) {
-			ItemStack s = e.crafting.copy();
-			if (s.stackSize == 0)
-				s.stackSize = 1;
-			System.out.println(s);
+	public void cr(LivingUpdateEvent e) {
+		if (e.entityLiving instanceof EntityPlayer
+				&& e.entityLiving.worldObj.isRemote) {
+			// System.out.println(PlayerInformation.get(
+			// (EntityPlayer) e.entityLiving).getQuestNums());
 		}
 	}
 

@@ -55,9 +55,7 @@ public class SyncClientPacket implements IMessage,
 		this.questNums = new Gson().fromJson(ByteBufUtils.readUTF8String(buf),
 				new TypeToken<HashMap<String, Integer>>() {
 				}.getType());
-		this.team = new Gson().fromJson(ByteBufUtils.readUTF8String(buf),
-				new TypeToken<String>() {
-				}.getType());
+		this.team = ByteBufUtils.readUTF8String(buf);
 	}
 
 	@Override
@@ -69,9 +67,6 @@ public class SyncClientPacket implements IMessage,
 		ByteBufUtils.writeUTF8String(buf, qb);
 		ByteBufUtils.writeUTF8String(buf, qn);
 		ByteBufUtils.writeUTF8String(buf, team);
-		// System.out.println(layerBools);
-		// System.out.println(lb);
-		// System.out.println(qn);
 
 	}
 }

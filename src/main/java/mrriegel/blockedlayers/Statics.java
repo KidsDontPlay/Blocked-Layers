@@ -5,14 +5,13 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.entity.PlayerInformation;
+import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 
 public class Statics {
 	public static void syncTeams(EntityPlayerMP player) {
-		if (player.worldObj.isRemote)
-			return;
-		if (PlayerInformation.get(player) == null)
+		if (!ConfigurationHandler.teams||player.worldObj.isRemote||PlayerInformation.get(player) == null)
 			return;
 		String ori = PlayerInformation.get(player).getTeam();
 		if (ori.equals(""))

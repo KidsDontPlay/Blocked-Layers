@@ -14,38 +14,28 @@ import org.lwjgl.opengl.GL11;
 public class QuestGui extends GuiScreen {
 	private static final ResourceLocation GuiTextures = new ResourceLocation(
 			Reference.MOD_ID + ":textures/gui/questGUI.png");
-	private HashMap<Integer, Boolean> layerBools;
-	private HashMap<String, Boolean> questBools;
-	private HashMap<String, Integer> questNums;
-	private String team;
-	int position, maxPosition;
-	int numofentrys = 10;
-	private int imageWidth = 179;
+	int pages, page;
+	int numofentrys = 13;
+	private int imageWidth = 180;
 	private int imageHeight = 217;
 
 	public QuestGui(EntityPlayer player) {
 		PlayerInformation pro = PlayerInformation.get(player);
-		layerBools = pro.getLayerBools();
-		questBools = pro.getQuestBools();
-		questNums = pro.getQuestNums();
-		System.out.println(questNums);
-		team = pro.getTeam();
-		position = 0;
-
-		maxPosition = layerBools.size() - numofentrys;
-		if (maxPosition < 0)
-			maxPosition = 0;
+		page = 0;
+		pages = (int) Math.ceil((double) pro.getQuestBools().size()
+				/ (double) numofentrys);
 	}
 
 	void drawMaps() {
 		int in = 0;
 		final int red = 0xCD0000;
 		final int blue = 0x3A5FCD;
-		String title = team.equals("") ? "No Team" : team;
-		fontRendererObj.drawString(title, this.width / 2
-		- fontRendererObj.getStringWidth(title) / 2,
+		PlayerInformation pro = PlayerInformation.get(mc.thePlayer);
+		String title = pro.getTeam().equals("") ? "No Team" : pro.getTeam();
+		fontRendererObj.drawString(title,
+				this.width / 2 - fontRendererObj.getStringWidth(title) / 2,
 				(this.height - this.imageHeight) / 2 + 12, 0x000000);
-		for (int i = position; i < position + numofentrys
+		for (int i = page; i < page + numofentrys
 				&& i < BlockedLayers.instance.questList.size(); i++) {
 			String name = BlockedLayers.instance.questList.get(i).getName();
 			fontRendererObj.drawString(
@@ -53,14 +43,14 @@ public class QuestGui extends GuiScreen {
 							+ ": "
 							+ name
 							+ " "
-							+ questNums.get(name + "Num")
+							+ pro.getQuestNums().get(name + "Num")
 							+ "/"
 							+ BlockedLayers.instance.questList.get(i)
 									.getNumber(),
 					(this.width - this.imageWidth) / 2 + 18,
 					(this.height - this.imageHeight) / 2 + 30
-							+ (fontRendererObj.FONT_HEIGHT + 2) * in,
-					questBools.get(name) ? blue : red);
+							+ (fontRendererObj.FONT_HEIGHT + 4) * in, pro
+							.getQuestBools().get(name) ? blue : red);
 			in++;
 		}
 	}

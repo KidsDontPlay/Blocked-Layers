@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.Statics;
 import mrriegel.blockedlayers.entity.PlayerInformation;
+import mrriegel.blockedlayers.packet.SyncClientPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -33,6 +34,9 @@ public class SyncHandler {
 	@SubscribeEvent
 	public void join(EntityJoinWorldEvent e) {
 		if (e.entity instanceof EntityPlayerMP) {
+			PacketHandler.INSTANCE.sendTo(
+new SyncClientPacket(
+					(EntityPlayerMP) e.entity), (EntityPlayerMP) e.entity);
 			Statics.syncTeams((EntityPlayerMP) e.entity);
 		}
 	}

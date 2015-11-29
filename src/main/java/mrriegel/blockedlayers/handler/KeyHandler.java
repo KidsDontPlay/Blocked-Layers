@@ -19,7 +19,7 @@ public class KeyHandler {
 	public void onKey(InputEvent.KeyInputEvent e) {
 		if (gui.isPressed()) {
 			PacketHandler.INSTANCE.sendToServer(new KeyPacket());
-			EntityPlayer p=Minecraft.getMinecraft().thePlayer;
+			EntityPlayer p = Minecraft.getMinecraft().thePlayer;
 			p.openGui(BlockedLayers.instance, 0, p.worldObj, 0, 0, 0);
 		}
 	}
