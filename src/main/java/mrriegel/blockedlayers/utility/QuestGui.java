@@ -1,8 +1,10 @@
 package mrriegel.blockedlayers.utility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.Quest;
@@ -10,12 +12,10 @@ import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.reference.Reference;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -33,6 +33,10 @@ public class QuestGui extends GuiScreen {
 	int guiRight = guiLeft + this.imageWidth;
 	int guiTop = (this.height - this.imageHeight) / 2;
 	int guiBot = guiTop + this.imageHeight;
+	ArrayList<Item> lis = new ArrayList<Item>(Arrays.asList(new Item[] {
+			Items.diamond, Items.emerald, Items.coal, Items.redstone,
+			Items.iron_ingot, Items.gold_ingot, Items.quartz }));
+	ItemStack deco = null;
 	GuiButton change;
 
 	enum Mode {
@@ -52,6 +56,7 @@ public class QuestGui extends GuiScreen {
 		PlayerInformation pro = PlayerInformation.get(player);
 		page = 0;
 		pages = pro.getQuestBools().size();
+		deco = new ItemStack(lis.get(new Random().nextInt(lis.size())));
 	}
 
 	@Override
@@ -141,11 +146,17 @@ public class QuestGui extends GuiScreen {
 		drawMaps();
 
 		RenderItem r = new RenderItem();
+		int min = 25, num = qus.size() - numofentrys;
+		int pos = 178 - min;
+
+		int m = ((int) ((double) pos / (double) ((pages - numofentrys)-1)) * page);
+		System.out.println("m: " + m);
+		System.out.println("page: " + page);
+		boolean ul = (page == 0 || qus.size() <= numofentrys);
 		r.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(),
-				new ItemStack(Items.diamond), guiLeft + this.imageWidth - 35,
-				/*(int) (guiTop + 25D + (double)page * (365D / (double)pages))*/
-				((8000-35)/qus.size()-numofentrys<1?1:qus.size()-numofentrys)*page+35);
-		buggy
+				deco, guiLeft + this.imageWidth - 35, (int) (guiTop + (ul ? min
+						: 25 + m)));
+		naja
 
 	}
 
