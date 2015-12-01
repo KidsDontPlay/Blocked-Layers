@@ -74,12 +74,13 @@ public class MyCommand implements ICommand {
 
 	@Override
 	public boolean canCommandSenderUseCommand(ICommandSender sender) {
-		if (!(sender instanceof EntityPlayer))
-			return false;
-		EntityPlayer player = (EntityPlayer) sender;
-		return MinecraftServer.getServer().isSinglePlayer()
-				|| MinecraftServer.getServer().getConfigurationManager()
-						.func_152596_g(player.getGameProfile());
+		if (sender instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer) sender;
+			return MinecraftServer.getServer().isSinglePlayer()
+					|| MinecraftServer.getServer().getConfigurationManager()
+							.func_152596_g(player.getGameProfile());
+		}
+		return true;
 	}
 
 	@Override

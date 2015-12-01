@@ -61,8 +61,9 @@ public class BlockedLayers {
 
 		File questFile = new File(configDir, "quests.json");
 		ArrayList<Quest> tmp = new ArrayList<Quest>();
-		tmp.add(new Quest("uni", "break", "block", "minecraft", 64, 0, 12));
-		tmp.add(new Quest("uniq", "breako", "tier", "AE2", 22, 2, 8));
+		tmp.add(new Quest("uni", "break", "block", "minecraft",
+				"mach doch mal", 64, 0, 12));
+		tmp.add(new Quest("uniq", "breako", "tier", "AE2", "hilfe", 22, 2, 8));
 		if (!questFile.exists()) {
 			questFile.createNewFile();
 			FileWriter fw = new FileWriter(questFile);

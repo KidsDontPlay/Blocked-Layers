@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.Quest;
@@ -19,6 +22,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -77,16 +81,14 @@ public class QuestGui extends GuiScreen {
 		String title = pro.getTeam().equals("") ? "No Team" : pro.getTeam();
 		fontRendererObj.drawString(title,
 				this.width / 2 - fontRendererObj.getStringWidth(title) / 2,
-				(this.height - this.imageHeight) / 2 + 12, 0x000000);
+				guiTop + 12, 0x000000);
 		for (int i = page; i < page + numofentrys && i < qus.size(); i++) {
 			String name = qus.get(i).getName();
 			fontRendererObj.drawString(qus.get(i).getLayer() + ": " + name
 					+ " " + pro.getQuestNums().get(name + "Num") + "/"
-					+ qus.get(i).getNumber(),
-					(this.width - this.imageWidth) / 2 + 18,
-					(this.height - this.imageHeight) / 2 + 30
-							+ (fontRendererObj.FONT_HEIGHT + 4) * in, pro
-							.getQuestBools().get(name) ? blue : red);
+					+ qus.get(i).getNumber(), guiLeft + 18, guiTop / 2 + 30
+					+ (fontRendererObj.FONT_HEIGHT + 4) * in, pro
+					.getQuestBools().get(name) ? blue : red);
 			in++;
 		}
 	}
@@ -146,17 +148,54 @@ public class QuestGui extends GuiScreen {
 		drawMaps();
 
 		RenderItem r = new RenderItem();
-		int min = 25, num = qus.size() - numofentrys;
-		int pos = 178 - min;
+		int pos = 178 - 25;
 
-		int m = ((int) ((double) pos / (double) ((pages - numofentrys)-1)) * page);
-		System.out.println("m: " + m);
-		System.out.println("page: " + page);
-		boolean ul = (page == 0 || qus.size() <= numofentrys);
+		double s = (double) pos / (double) (pages - numofentrys)
+				* (double) page + 178.D;
 		r.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(),
-				deco, guiLeft + this.imageWidth - 35, (int) (guiTop + (ul ? min
-						: 25 + m)));
-		naja
+				deco, guiLeft + this.imageWidth - 35, (int) (guiTop + s - pos));
+		drawToolTip(p_73863_1_, p_73863_2_);
+
+	}
+
+	private void drawToolTip(int param1, int param2) {
+		int i = Mouse.getX() * this.width / this.mc.displayWidth;
+		int j = this.height - Mouse.getY() * this.height
+				/ this.mc.displayHeight - 1;
+		int in = 0;
+		Quest qu = null;
+		for (int u = page; u < page + numofentrys && u < qus.size(); u++) {
+			Quest q = qus.get(u);
+			int tmp = guiTop / 2 + 30 + (fontRendererObj.FONT_HEIGHT + 4) * in;
+			int tmp2 = guiTop / 2 + 30 + (fontRendererObj.FONT_HEIGHT + 4)
+					* (in + 1);
+			if (i > (guiLeft + 18) && i < (guiRight - 30) && j > (tmp)
+					&& j < (tmp2)) {
+				qu = q;
+				break;
+			}
+			in++;
+		}
+		if (qu == null)
+			return;
+		List list = new ArrayList();
+		if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+			list.add("Press SHIFT for more details.");
+		else {
+			String s = qu.getText();
+			List<String> matchList = new ArrayList<String>();
+			Pattern regex = Pattern.compile(".{1,25}(?:\\s|$)", Pattern.DOTALL);
+			Matcher regexMatcher = regex.matcher(s);
+			while (regexMatcher.find()) {
+				matchList.add(regexMatcher.group());
+			}
+			list=new ArrayList<String>(matchList);
+		}
+		GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
+		GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+		this.drawHoveringText(list, i, j, fontRendererObj);
+		GL11.glPopAttrib();
+		GL11.glPopAttrib();
 
 	}
 

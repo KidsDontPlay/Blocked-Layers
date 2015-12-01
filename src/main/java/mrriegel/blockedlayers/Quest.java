@@ -1,26 +1,20 @@
 package mrriegel.blockedlayers;
 
 public class Quest {
-	String name, activity, object, modID;
+	String name, activity, object, modID,text;
 	int layer, meta, number;
 
-	public Quest(String name, String activity, String object, String modID,
+	public Quest(String name, String activity, String object, String modID,String text,
 			int layer, int meta, int number) {
 		super();
 		this.name = name;
 		this.activity = activity;
 		this.object = object;
 		this.modID = modID;
+		this.text=text;
 		this.layer = layer;
 		this.meta = meta;
 		this.number = number;
-	}
-
-	@Override
-	public String toString() {
-		return "Quest [name=" + name + ", activity=" + activity + ", object="
-				+ object + ", modID=" + modID + ", layer=" + layer + ", meta="
-				+ meta + ", number=" + number + "]";
 	}
 
 	public String getName() {
@@ -37,6 +31,10 @@ public class Quest {
 
 	public String getModID() {
 		return modID;
+	}
+
+	public String getText() {
+		return text;
 	}
 
 	public int getLayer() {
