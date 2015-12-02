@@ -1,17 +1,17 @@
 package mrriegel.blockedlayers;
 
 public class Quest {
-	private String name, activity, object, modID,text;
+	private String name, activity, object, modID, text;
 	private int layer, meta, number;
 
-	public Quest(String name, String activity, String object, String modID,String text,
-			int layer, int meta, int number) {
+	public Quest(String name, String activity, String object, String modID,
+			String text, int layer, int meta, int number) {
 		super();
 		this.name = name;
 		this.activity = activity;
 		this.object = object;
 		this.modID = modID;
-		this.text=text;
+		this.text = text;
 		this.layer = layer;
 		this.meta = meta;
 		this.number = number;

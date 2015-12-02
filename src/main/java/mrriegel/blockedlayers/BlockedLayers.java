@@ -18,14 +18,7 @@ import mrriegel.blockedlayers.handler.SyncHandler;
 import mrriegel.blockedlayers.proxy.CommonProxy;
 import mrriegel.blockedlayers.reference.Reference;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.oredict.OreDictionary;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -37,7 +30,6 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -61,9 +53,35 @@ public class BlockedLayers {
 
 		File questFile = new File(configDir, "quests.json");
 		ArrayList<Quest> tmp = new ArrayList<Quest>();
-		tmp.add(new Quest("uni", "break", "block", "minecraft",
-				"mach doch mal", 64, 0, 12));
-		tmp.add(new Quest("uniq", "breako", "tier", "AE2", "hilfe", 22, 2, 8));
+		tmp.add(new Quest("apple", "eat", "apple", "minecraft", "eat apple",
+				64, 0, 6));
+		tmp.add(new Quest("quick", "eat", "potion", "minecraft", "swiftness",
+				54, 8226, 1));
+		tmp.add(new Quest("sheepy", "break", "wool", "minecraft", "pink", 54,
+				6, 2));
+		tmp.add(new Quest("logs", "break", "log", "minecraft", "woods", 64, -1,
+				5));
+		tmp.add(new Quest("pearl", "kill", "Enderman", "minecraft", "ender",
+				54, 0, 2));
+		tmp.add(new Quest("wither", "kill", "Skeleton", "minecraft", "coal",
+				54, 1, 1));
+		tmp.add(new Quest("rich", "harvest", "diamond", "minecraft", "bright",
+				14, 0, 8));
+		tmp.add(new Quest("wheat", "harvest", "wheat", "minecraft", "bread",
+				64, 0, 4));
+		tmp.add(new Quest("zombie", "loot", "rotten_flesh", "minecraft",
+				"rotten", 54, 0, 2));
+		tmp.add(new Quest("goldy", "own", "gold_ingot", "minecraft", "golden",
+				54, 0, 8));
+		tmp.add(new Quest("hunger", "consume", "cooked_chicken", "minecraft",
+				"chick", 64, 0, 16));
+		tmp.add(new Quest("xp", "xp", null, null, "green", 54, 0, 300));
+		tmp.add(new Quest("hot", "find", "Desert", null, "without water", 34,
+				0, 1));
+		tmp.add(new Quest("bread", "craft", "bread", "minecraft", "ham", 54, 0,
+				12));
+		tmp.add(new Quest("charcoal", "craft", "coal", "minecraft", "fuel", 54,
+				1, 8));
 		if (!questFile.exists()) {
 			questFile.createNewFile();
 			FileWriter fw = new FileWriter(questFile);
@@ -77,10 +95,15 @@ public class BlockedLayers {
 
 		File rewardFile = new File(configDir, "rewards.json");
 		ArrayList<Reward> ttt = new ArrayList<Reward>();
+		ttt.add(new Reward(64,
+				new ArrayList<String>(Arrays
+						.asList(new String[] { "minecraft:stone_pickaxe:0:1",
+								"minecraft:stone_shovel:0:1",
+								"minecraft:stone_axe:0:1",
+								"minecraft:cooked_beef:0:10" }))));
 		ttt.add(new Reward(12, new ArrayList<String>(Arrays
-				.asList(new String[] { "kakck", "miea", "läu" }))));
-		ttt.add(new Reward(24, new ArrayList<String>(Arrays
-				.asList(new String[] { "mau", "erk" }))));
+				.asList(new String[] { "minecraft:golden_apple:0:5",
+						"minecraft:golden_apple:1:1" }))));
 		if (!rewardFile.exists()) {
 			rewardFile.createNewFile();
 			FileWriter fw = new FileWriter(rewardFile);
@@ -96,7 +119,7 @@ public class BlockedLayers {
 
 	}
 
-	void validate(ArrayList<Quest> lis) {
+	void validateQuests(ArrayList<Quest> lis) {
 		ArrayList<String> names = new ArrayList<String>();
 		for (Quest q : lis) {
 			if (names.contains(q.getName()))
@@ -105,11 +128,14 @@ public class BlockedLayers {
 			if (q.getName().length() > 10)
 				throw new RuntimeException(q.getName() + " is longer than 10");
 			boolean item = false, block = false, entity = false;
-			if (GameRegistry.findItem(q.getModID(), q.getObject()) != null)
+			if (GameRegistry.findItem(q.getModID(), q.getObject()) != null
+					|| q.getObject() == null || q.getModID() == null)
 				item = true;
-			if (GameRegistry.findBlock(q.getModID(), q.getObject()) != null)
+			if (GameRegistry.findBlock(q.getModID(), q.getObject()) != null
+					|| q.getObject() == null || q.getModID() == null)
 				block = true;
-			if (EntityList.stringToClassMapping.containsKey(q.getObject()))
+			if (EntityList.stringToClassMapping.containsKey(q.getObject())
+					|| q.getObject() == null || q.getModID() == null)
 				entity = true;
 			if (!item && !block && !entity)
 				throw new RuntimeException(q.getObject() + " doesn't exist");
@@ -118,23 +144,16 @@ public class BlockedLayers {
 		}
 	}
 
-	public static ItemStack string2Stack(String s) {
-		ItemStack stack = null;
-		if (StringUtils.countMatches(s, ":") == 3) {
-			stack = GameRegistry.findItemStack(s.split(":")[0],
-					s.split(":")[1], Integer.valueOf(s.split(":")[3]));
-			if (stack != null) {
-				stack.setItemDamage(Integer.valueOf(s.split(":")[2]));
+	void validateRewards(ArrayList<Reward> lis) {
+		for (Reward r : lis) {
+			if (!ConfigurationHandler.reward)
+				break;
+			for (String s : r.getRewards()) {
+				if (Statics.string2Stack(s) == null)
+					throw new RuntimeException(s + " is not available.");
 			}
-		} else if (StringUtils.countMatches(s, ":") == 1) {
-			if (OreDictionary.doesOreNameExist(s.split(":")[0])) {
-				stack = OreDictionary.getOres(s.split(":")[0]).get(0);
-				stack.stackSize = Integer.valueOf(s.split(":")[1]);
-			}
-		} else
-			throw new RuntimeException("wrong reward file");
 
-		return stack;
+		}
 	}
 
 	@Mod.EventHandler
@@ -159,7 +178,8 @@ public class BlockedLayers {
 
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		validate(questList);
+		validateQuests(questList);
+		validateRewards(rewardList);
 	}
 
 }

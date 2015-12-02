@@ -1,7 +1,6 @@
 package mrriegel.blockedlayers;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.handler.PacketHandler;
@@ -31,7 +30,7 @@ public class MyCommand implements ICommand {
 
 	@Override
 	public String getCommandUsage(ICommandSender sender) {
-		return "bl team <player> <team>";
+		return "bl team|reset";
 	}
 
 	@Override
@@ -87,7 +86,7 @@ public class MyCommand implements ICommand {
 							+ args[3] + " reset."));
 					return;
 				}
-				sender.addChatMessage(new ChatComponentText("Quest: " + args[3]
+				sender.addChatMessage(new ChatComponentText("Quest " + args[3]
 						+ " doesn't exist."));
 				return;
 			} else if (args[1].equals("layer")) {
@@ -119,7 +118,7 @@ public class MyCommand implements ICommand {
 							+ args[3] + " reset."));
 					return;
 				}
-				sender.addChatMessage(new ChatComponentText("Quest: " + args[3]
+				sender.addChatMessage(new ChatComponentText("Quest " + args[3]
 						+ " doesn't exist."));
 				return;
 			}

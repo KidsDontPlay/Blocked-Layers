@@ -1,7 +1,6 @@
 package mrriegel.blockedlayers.handler;
 
 import java.io.File;
-import java.util.Arrays;
 
 import net.minecraftforge.common.config.Configuration;
 
@@ -15,7 +14,7 @@ public class ConfigurationHandler {
 
 		reward = config.get("Common", "reward", false, "Enable Rewards")
 				.getBoolean();
-		teams = config.get("Common", "teams", false, "Enable Teams")
+		teams = config.get("Common", "teams", true, "Enable Teams")
 				.getBoolean();
 		withoutSilk = config
 				.get("Common",

@@ -1,6 +1,5 @@
 package mrriegel.blockedlayers.handler;
 
-import java.util.Arrays;
 import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.entity.PlayerInformation;

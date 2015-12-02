@@ -55,7 +55,8 @@ public class QuestHandler {
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
 			if (!q.getActivity().equals("eat") || !questValid(pro, q)
-					|| pro.getQuestBools().get(name)) {
+					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode) {
 				continue;
 			}
 			ItemStack stack;
@@ -95,6 +96,7 @@ public class QuestHandler {
 			if (!q.getActivity().equals("break")
 					|| !questValid(pro, q)
 					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode
 					|| (ConfigurationHandler.withoutSilk && EnchantmentHelper
 							.getSilkTouchModifier(player))) {
 				continue;
@@ -134,7 +136,8 @@ public class QuestHandler {
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
 			if (!q.getActivity().equals("kill") || !questValid(pro, q)
-					|| pro.getQuestBools().get(name)) {
+					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode) {
 				continue;
 			}
 
@@ -173,7 +176,8 @@ public class QuestHandler {
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
 			if (!q.getActivity().equals("harvest") || !questValid(pro, q)
-					|| pro.getQuestBools().get(name)) {
+					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode) {
 				continue;
 			}
 			ItemStack target = null;
@@ -214,7 +218,8 @@ public class QuestHandler {
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
 			if (!q.getActivity().equals("loot") || !questValid(pro, q)
-					|| pro.getQuestBools().get(name)) {
+					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode) {
 				continue;
 			}
 
@@ -257,7 +262,9 @@ public class QuestHandler {
 			String name = q.getName();
 			if ((!q.getActivity().equals("own") && !q.getActivity().equals(
 					"consume"))
-					|| !questValid(pro, q) || pro.getQuestBools().get(name)) {
+					|| !questValid(pro, q)
+					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode) {
 				continue;
 			}
 			ItemStack target = null;
@@ -266,6 +273,8 @@ public class QuestHandler {
 			int meta = 0;
 			int num = 0;
 			for (int i = 0; i < player.inventory.mainInventory.length; i++) {
+				if (player.inventory.mainInventory[i] == null)
+					continue;
 				ItemStack stack = player.inventory.mainInventory[i].copy();
 				if (q.getMeta() == -1) {
 					meta = OreDictionary.WILDCARD_VALUE;
@@ -280,9 +289,11 @@ public class QuestHandler {
 			}
 
 			if (num >= q.getNumber()) {
-				if (q.getActivity().equals("consume"))
+				if (q.getActivity().equals("consume")) {
 					consumeInventoryItem(player.inventory, targetItem, meta,
 							q.getNumber());
+					player.inventory.markDirty();
+				}
 				pro.getQuestNums().put(name + "Num", q.getNumber());
 				pro.getQuestBools().put(name, true);
 				player.addChatMessage(new ChatComponentText(name
@@ -352,7 +363,8 @@ public class QuestHandler {
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
 			if (!q.getActivity().equals("xp") || !questValid(pro, q)
-					|| pro.getQuestBools().get(name)) {
+					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode) {
 				continue;
 			}
 
@@ -383,7 +395,8 @@ public class QuestHandler {
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
 			if (!q.getActivity().equals("find") || !questValid(pro, q)
-					|| pro.getQuestBools().get(name)) {
+					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode) {
 				continue;
 			}
 			String biom = q.getObject();
@@ -408,7 +421,8 @@ public class QuestHandler {
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
 			if (!q.getActivity().equals("craft") || !questValid(pro, q)
-					|| pro.getQuestBools().get(name)) {
+					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode) {
 				continue;
 			}
 			craftNsmelt(player, q, oriStack);
@@ -422,10 +436,12 @@ public class QuestHandler {
 		EntityPlayer player = event.player;
 		PlayerInformation pro = PlayerInformation.get(player);
 		ItemStack oriStack = event.smelting.copy();
+		System.out.println(oriStack);
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
-			if (!q.getActivity().equals("smelt") || !questValid(pro, q)
-					|| pro.getQuestBools().get(name)) {
+			if (!q.getActivity().equals("craft") || !questValid(pro, q)
+					|| pro.getQuestBools().get(name)
+					|| player.capabilities.isCreativeMode) {
 				continue;
 			}
 			craftNsmelt(player, q, oriStack);
@@ -447,8 +463,8 @@ public class QuestHandler {
 			pro.getQuestNums()
 					.put(name + "Num",
 							pro.getQuestNums().get(name + "Num")
-									+ oriStack.stackSize == 0 ? 1
-									: oriStack.stackSize);
+									+ (oriStack.stackSize == 0 ? 1
+											: oriStack.stackSize));
 			if (pro.getQuestNums().get(name + "Num") >= number) {
 				pro.getQuestBools().put(name, true);
 				player.addChatMessage(new ChatComponentText(name
@@ -488,8 +504,8 @@ public class QuestHandler {
 					if (r.getLayer() == entry.getKey()) {
 						ArrayList<ItemStack> tmp = new ArrayList<ItemStack>();
 						for (String s : r.getRewards()) {
-							if (BlockedLayers.string2Stack(s) != null)
-								tmp.add(BlockedLayers.string2Stack(s));
+							if (Statics.string2Stack(s) != null)
+								tmp.add(Statics.string2Stack(s));
 						}
 						for (ItemStack s : tmp) {
 							if (!player.inventory.addItemStackToInventory(s
