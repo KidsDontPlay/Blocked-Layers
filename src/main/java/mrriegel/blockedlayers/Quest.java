@@ -1,8 +1,8 @@
 package mrriegel.blockedlayers;
 
 public class Quest {
-	String name, activity, object, modID,text;
-	int layer, meta, number;
+	private String name, activity, object, modID,text;
+	private int layer, meta, number;
 
 	public Quest(String name, String activity, String object, String modID,String text,
 			int layer, int meta, int number) {

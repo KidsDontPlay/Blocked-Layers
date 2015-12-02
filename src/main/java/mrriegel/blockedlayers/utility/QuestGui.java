@@ -78,7 +78,7 @@ public class QuestGui extends GuiScreen {
 		final int blue = 0x3A5FCD;
 		PlayerInformation pro = PlayerInformation.get(mc.thePlayer);
 		sort(pro);
-		String title = pro.getTeam().equals("") ? "No Team" : pro.getTeam();
+		String title = pro.getTeam().equals("") ? "No Team" : "Team: "+pro.getTeam();
 		fontRendererObj.drawString(title,
 				this.width / 2 - fontRendererObj.getStringWidth(title) / 2,
 				guiTop + 12, 0x000000);
@@ -149,7 +149,6 @@ public class QuestGui extends GuiScreen {
 
 		RenderItem r = new RenderItem();
 		int pos = 178 - 25;
-
 		double s = (double) pos / (double) (pages - numofentrys)
 				* (double) page + 178.D;
 		r.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(),

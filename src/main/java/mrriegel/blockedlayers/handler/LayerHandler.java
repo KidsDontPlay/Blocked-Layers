@@ -1,5 +1,6 @@
 package mrriegel.blockedlayers.handler;
 
+import java.util.Arrays;
 import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.entity.PlayerInformation;
@@ -12,10 +13,18 @@ public class LayerHandler {
 
 	@SubscribeEvent
 	public void disallow(BlockEvent.BreakEvent event) {
+		boolean currentBlacklisted = isIn(ConfigurationHandler.dimensionBlack,
+				event.world.provider.dimensionId);
+		boolean currentWhitelisted = isIn(ConfigurationHandler.dimensionWhite,
+				event.world.provider.dimensionId);
+		String bool = ConfigurationHandler.dimensionBlack.length == 0 ? ConfigurationHandler.dimensionWhite.length == 0 ? "nothing"
+				: "white"
+				: "black";
 		if (event.world.isRemote || event.getPlayer() == null
 				|| event.getPlayer() instanceof FakePlayer
 				|| event.getPlayer().capabilities.isCreativeMode
-				|| event.world.provider.dimensionId != 0)
+				|| (bool.equals("black") && currentBlacklisted)
+				|| (bool.equals("white") && !currentWhitelisted))
 			return;
 
 		EntityPlayer player = event.getPlayer();
@@ -30,5 +39,12 @@ public class LayerHandler {
 			}
 
 		}
+	}
+
+	boolean isIn(int[] ar, int i) {
+		for (int o : ar)
+			if (i == o)
+				return true;
+		return false;
 	}
 }

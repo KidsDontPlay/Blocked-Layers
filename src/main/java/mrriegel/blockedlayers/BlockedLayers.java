@@ -99,21 +99,21 @@ public class BlockedLayers {
 	void validate(ArrayList<Quest> lis) {
 		ArrayList<String> names = new ArrayList<String>();
 		for (Quest q : lis) {
-			if (names.contains(q.name))
-				throw new RuntimeException(q.name + " isn't unique");
-			names.add(q.name);
-			if (q.name.length() > 10)
-				throw new RuntimeException(q.name + " is longer than 10");
+			if (names.contains(q.getName()))
+				throw new RuntimeException(q.getName() + " isn't unique");
+			names.add(q.getName());
+			if (q.getName().length() > 10)
+				throw new RuntimeException(q.getName() + " is longer than 10");
 			boolean item = false, block = false, entity = false;
-			if (GameRegistry.findItem(q.modID, q.object) != null)
+			if (GameRegistry.findItem(q.getModID(), q.getObject()) != null)
 				item = true;
-			if (GameRegistry.findBlock(q.modID, q.object) != null)
+			if (GameRegistry.findBlock(q.getModID(), q.getObject()) != null)
 				block = true;
-			if (EntityList.stringToClassMapping.containsKey(q.object))
+			if (EntityList.stringToClassMapping.containsKey(q.getObject()))
 				entity = true;
 			if (!item && !block && !entity)
-				throw new RuntimeException(q.object + " doesn't exist");
-			if (q.layer < 1 || q.layer > 255)
+				throw new RuntimeException(q.getObject() + " doesn't exist");
+			if (q.getLayer() < 1 || q.getLayer() > 255)
 				throw new RuntimeException("layer out of range 1-255");
 		}
 	}
@@ -147,7 +147,6 @@ public class BlockedLayers {
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
 		MinecraftForge.EVENT_BUS.register(new SyncHandler());
 		MinecraftForge.EVENT_BUS.register(this);
-		FMLCommonHandler.instance().bus().register(this);
 		FMLCommonHandler.instance().bus().register(new KeyHandler());
 		proxy.registerHandlers();
 
@@ -161,26 +160,6 @@ public class BlockedLayers {
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		validate(questList);
-	}
-
-	@SubscribeEvent
-	public void bre(BlockEvent.BreakEvent e) {
-		if (!e.world.isRemote) {
-			// e.setCanceled(true);
-			// PacketHandler.INSTANCE.sendTo(new SyncClientPacket(
-			// (EntityPlayerMP) e.getPlayer()), (EntityPlayerMP) e
-			// .getPlayer());
-
-		}
-	}
-
-	@SubscribeEvent
-	public void cr(LivingUpdateEvent e) {
-		if (e.entityLiving instanceof EntityPlayer
-				&& e.entityLiving.worldObj.isRemote) {
-			// System.out.println(PlayerInformation.get(
-			// (EntityPlayer) e.entityLiving).getQuestNums());
-		}
 	}
 
 }
