@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.BlockedLayers;
-import mrriegel.blockedlayers.Quest;
-import mrriegel.blockedlayers.Reward;
-import mrriegel.blockedlayers.Statics;
 import mrriegel.blockedlayers.entity.PlayerInformation;
+import mrriegel.blockedlayers.stuff.Quest;
+import mrriegel.blockedlayers.stuff.Reward;
+import mrriegel.blockedlayers.stuff.Statics;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -46,6 +46,16 @@ public class QuestHandler {
 		return true;
 	}
 
+	void finish(EntityPlayer player, Quest q) {
+		PlayerInformation pro = PlayerInformation.get(player);
+		String name = q.getName();
+		pro.getQuestBools().put(name, true);
+		pro.getQuestNums().put(name + "Num", q.getNumber());
+		player.addChatMessage(new ChatComponentText(name.substring(0, 1)
+				.toUpperCase() + name.substring(1) + " done!"));
+		Statics.syncTeams((EntityPlayerMP) player);
+	}
+
 	@SubscribeEvent
 	public void eatItem(PlayerUseItemEvent.Finish event) {
 		if (event.entityPlayer.worldObj.isRemote)
@@ -73,12 +83,7 @@ public class QuestHandler {
 				pro.getQuestNums().put(name + "Num",
 						pro.getQuestNums().get(name + "Num") + 1);
 				if (pro.getQuestNums().get(name + "Num") >= number) {
-					pro.getQuestBools().put(name, true);
-					player.addChatMessage(new ChatComponentText(name.substring(
-							0, 1).toUpperCase()
-							+ name.substring(1) + " done!"));
-					Statics.syncTeams((EntityPlayerMP) player);
-
+					finish(player, q);
 				}
 			}
 		}
@@ -115,12 +120,7 @@ public class QuestHandler {
 				pro.getQuestNums().put(name + "Num",
 						pro.getQuestNums().get(name + "Num") + 1);
 				if (pro.getQuestNums().get(name + "Num") >= number) {
-					pro.getQuestBools().put(name, true);
-					player.addChatMessage(new ChatComponentText(name.substring(
-							0, 1).toUpperCase()
-							+ name.substring(1) + " done!"));
-					Statics.syncTeams((EntityPlayerMP) player);
-
+					finish(player, q);
 				}
 			}
 		}
@@ -153,13 +153,8 @@ public class QuestHandler {
 							.getSkeletonType() == meta)) {
 				pro.getQuestNums().put(name + "Num",
 						pro.getQuestNums().get(name + "Num") + 1);
-				if (pro.getQuestNums().get(name + "Num") == number) {
-					pro.getQuestBools().put(name, true);
-					player.addChatMessage(new ChatComponentText(name.substring(
-							0, 1).toUpperCase()
-							+ name.substring(1) + " done!"));
-					Statics.syncTeams((EntityPlayerMP) player);
-
+				if (pro.getQuestNums().get(name + "Num") >= number) {
+					finish(player, q);
 				}
 			}
 		}
@@ -196,12 +191,7 @@ public class QuestHandler {
 							pro.getQuestNums().get(name + "Num")
 									+ stack.copy().stackSize);
 					if (pro.getQuestNums().get(name + "Num") >= number) {
-						pro.getQuestBools().put(name, true);
-						player.addChatMessage(new ChatComponentText(name
-								.substring(0, 1).toUpperCase()
-								+ name.substring(1) + " done!"));
-						Statics.syncTeams((EntityPlayerMP) player);
-
+						finish(player, q);
 					}
 				}
 			}
@@ -240,12 +230,7 @@ public class QuestHandler {
 							pro.getQuestNums().get(name + "Num")
 									+ stack.stackSize);
 					if (pro.getQuestNums().get(name + "Num") >= number) {
-						pro.getQuestBools().put(name, true);
-						player.addChatMessage(new ChatComponentText(name
-								.substring(0, 1).toUpperCase()
-								+ name.substring(1) + " done!"));
-						Statics.syncTeams((EntityPlayerMP) player);
-
+						finish(player, q);
 					}
 				}
 			}
@@ -292,21 +277,15 @@ public class QuestHandler {
 				if (q.getActivity().equals("consume")) {
 					consumeInventoryItem(player.inventory, targetItem, meta,
 							q.getNumber());
-					player.inventory.markDirty();
+					player.inventoryContainer.detectAndSendChanges();
 				}
-				pro.getQuestNums().put(name + "Num", q.getNumber());
-				pro.getQuestBools().put(name, true);
-				player.addChatMessage(new ChatComponentText(name
-						.substring(0, 1).toUpperCase()
-						+ name.substring(1)
-						+ " done!"));
-				Statics.syncTeams((EntityPlayerMP) player);
-
+				finish(player, q);
 			}
 		}
 	}
 
-	boolean consumeInventoryItem(IInventory inv, Item item, int meta, int num) {
+	private boolean consumeInventoryItem(IInventory inv, Item item, int meta,
+			int num) {
 		Integer[] i = getSlotsWith(inv, item, meta);
 		for (int s : i) {
 			ItemStack stack = inv.getStackInSlot(s);
@@ -324,7 +303,7 @@ public class QuestHandler {
 		return false;
 	}
 
-	Integer[] getSlotsWith(IInventory inv, Item item, int meta) {
+	private Integer[] getSlotsWith(IInventory inv, Item item, int meta) {
 		ArrayList<Integer> ar = new ArrayList<Integer>();
 		for (int i = 0; i < inv.getSizeInventory()
 				- ((inv instanceof InventoryPlayer) ? 4 : 0); ++i) {
@@ -338,7 +317,7 @@ public class QuestHandler {
 		return ar.toArray(new Integer[ar.size()]);
 	}
 
-	boolean decrStackSize(IInventory inv, int slot, int num) {
+	private boolean decrStackSize(IInventory inv, int slot, int num) {
 		ItemStack stack = inv.getStackInSlot(slot);
 		if (stack == null || stack.stackSize < num)
 			return false;
@@ -373,13 +352,7 @@ public class QuestHandler {
 			pro.getQuestNums().put(name + "Num",
 					pro.getQuestNums().get(name + "Num") + event.orb.xpValue);
 			if (pro.getQuestNums().get(name + "Num") >= number) {
-				pro.getQuestBools().put(name, true);
-				player.addChatMessage(new ChatComponentText(name
-						.substring(0, 1).toUpperCase()
-						+ name.substring(1)
-						+ " done!"));
-				Statics.syncTeams((EntityPlayerMP) player);
-
+				finish(player, q);
 			}
 		}
 	}
@@ -401,12 +374,7 @@ public class QuestHandler {
 			}
 			String biom = q.getObject();
 			if (biom.equalsIgnoreCase(currentBiom)) {
-				pro.getQuestBools().put(name, true);
-				player.addChatMessage(new ChatComponentText(name
-						.substring(0, 1).toUpperCase()
-						+ name.substring(1)
-						+ " done!"));
-				Statics.syncTeams((EntityPlayerMP) player);
+				finish(player, q);
 			}
 		}
 	}
@@ -436,7 +404,6 @@ public class QuestHandler {
 		EntityPlayer player = event.player;
 		PlayerInformation pro = PlayerInformation.get(player);
 		ItemStack oriStack = event.smelting.copy();
-		System.out.println(oriStack);
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
 			if (!q.getActivity().equals("craft") || !questValid(pro, q)
@@ -466,13 +433,7 @@ public class QuestHandler {
 									+ (oriStack.stackSize == 0 ? 1
 											: oriStack.stackSize));
 			if (pro.getQuestNums().get(name + "Num") >= number) {
-				pro.getQuestBools().put(name, true);
-				player.addChatMessage(new ChatComponentText(name
-						.substring(0, 1).toUpperCase()
-						+ name.substring(1)
-						+ " done!"));
-				Statics.syncTeams((EntityPlayerMP) player);
-
+				finish(player, q);
 			}
 		}
 	}
@@ -483,7 +444,6 @@ public class QuestHandler {
 			return;
 		EntityPlayer player = event.entityPlayer;
 		PlayerInformation pro = PlayerInformation.get(player);
-		World world = player.worldObj;
 		for (Entry<Integer, Boolean> entry : pro.getLayerBools().entrySet()) {
 			boolean ll = true;
 			for (Quest q : BlockedLayers.instance.questList) {

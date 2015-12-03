@@ -2,7 +2,6 @@ package mrriegel.blockedlayers.handler;
 
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.packet.KeyPacket;
-import mrriegel.blockedlayers.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,8 +12,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 
 public class KeyHandler {
-	public static KeyBinding gui = new KeyBinding("key.gui", Keyboard.KEY_L,
-			"key.categories." + Reference.MOD_ID);
+	public static KeyBinding gui = new KeyBinding(BlockedLayers.MOD_ID
+			+ ".clipboard", Keyboard.KEY_L, BlockedLayers.MOD_NAME);
 
 	@SubscribeEvent
 	public void onKey(InputEvent.KeyInputEvent e) {

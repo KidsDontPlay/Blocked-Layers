@@ -1,8 +1,8 @@
 package mrriegel.blockedlayers.handler;
 
-import mrriegel.blockedlayers.Statics;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.packet.SyncClientPacket;
+import mrriegel.blockedlayers.stuff.Statics;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.util.FakePlayer;

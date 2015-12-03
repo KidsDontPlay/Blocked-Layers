@@ -1,4 +1,4 @@
-package mrriegel.blockedlayers;
+package mrriegel.blockedlayers.stuff;
 
 public class Quest {
 	private String name, activity, object, modID, text;

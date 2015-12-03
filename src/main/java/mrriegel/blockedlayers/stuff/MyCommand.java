@@ -1,7 +1,8 @@
-package mrriegel.blockedlayers;
+package mrriegel.blockedlayers.stuff;
 
 import java.util.List;
 
+import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.handler.PacketHandler;
 import mrriegel.blockedlayers.packet.SyncClientPacket;
@@ -14,9 +15,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 
 public class MyCommand implements ICommand {
-
-	protected String fullEntityName;
-	protected Entity conjuredEntity;
 
 	@Override
 	public int compareTo(Object o) {

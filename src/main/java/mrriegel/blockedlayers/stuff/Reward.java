@@ -1,4 +1,4 @@
-package mrriegel.blockedlayers;
+package mrriegel.blockedlayers.stuff;
 
 import java.util.ArrayList;
 

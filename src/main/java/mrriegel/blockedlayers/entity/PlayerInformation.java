@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.BlockedLayers;
-import mrriegel.blockedlayers.Quest;
+import mrriegel.blockedlayers.stuff.Quest;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

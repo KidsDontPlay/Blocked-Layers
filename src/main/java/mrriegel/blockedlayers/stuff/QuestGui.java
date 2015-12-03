@@ -1,4 +1,4 @@
-package mrriegel.blockedlayers;
+package mrriegel.blockedlayers.stuff;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,8 +9,8 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.entity.PlayerInformation;
-import mrriegel.blockedlayers.reference.Reference;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11;
 
 public class QuestGui extends GuiScreen {
 	private static final ResourceLocation GuiTextures = new ResourceLocation(
-			Reference.MOD_ID + ":textures/gui/questGUI.png");
+			BlockedLayers.MOD_ID + ":textures/gui/questGUI.png");
 	int pages, page;
 	int numofentrys = 13;
 	int imageWidth = 180;
