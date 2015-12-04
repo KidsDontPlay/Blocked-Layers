@@ -21,6 +21,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -51,8 +52,8 @@ public class QuestHandler {
 		String name = q.getName();
 		pro.getQuestBools().put(name, true);
 		pro.getQuestNums().put(name + "Num", q.getNumber());
-		player.addChatMessage(new ChatComponentText(name.substring(0, 1)
-				.toUpperCase() + name.substring(1) + " done!"));
+		player.addChatMessage(new ChatComponentText(StatCollector
+				.translateToLocalFormatted("bl.quest.done", name)));
 		Statics.syncTeams((EntityPlayerMP) player);
 	}
 
@@ -456,8 +457,9 @@ public class QuestHandler {
 			}
 			if (!pro.getLayerBools().get(entry.getKey()) && ll) {
 				pro.getLayerBools().put(entry.getKey(), true);
-				player.addChatMessage(new ChatComponentText("Layer "
-						+ entry.getKey() + " released!"));
+				player.addChatMessage(new ChatComponentText(StatCollector
+						.translateToLocalFormatted("bl.layer.done",
+								entry.getKey())));
 				for (Reward r : BlockedLayers.instance.rewardList) {
 					if (!ConfigurationHandler.reward)
 						break;
@@ -468,10 +470,8 @@ public class QuestHandler {
 								tmp.add(Statics.string2Stack(s));
 						}
 						for (ItemStack s : tmp) {
-							if (!player.inventory.addItemStackToInventory(s
-									.copy()))
-								player.dropPlayerItemWithRandomChoice(s.copy(),
-										false);
+							if (!player.inventory.addItemStackToInventory(s))
+								player.dropPlayerItemWithRandomChoice(s, false);
 						}
 					}
 				}

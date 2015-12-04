@@ -1,1 +1,16 @@
-tile.BlockedLayers:un.name=Un
+BlockedLayers.clipboard=Open Clipboard
+
+bl.quest.done=%s done.
+bl.layer.done=Layer %d released.
+
+bl.player.online=%s is not online.
+bl.player.add=%s was added to team %s.
+
+bl.quest.reset=Quest %s was reset.
+bl.quest.exist=Quest %s doesn't exist.
+
+bl.layer.reset=Layer %d was reset.
+bl.layer.exist=Layer %d doesn't exist.
+
+bl.gui.noteam=No team
+bl.gui.shift=Press SHIFT for more details.

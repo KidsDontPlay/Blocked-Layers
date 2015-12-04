@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 
 public class MyCommand implements ICommand {
 
@@ -49,8 +50,8 @@ public class MyCommand implements ICommand {
 				}
 			}
 			if (player == null) {
-				sender.addChatMessage(new ChatComponentText(args[1]
-						+ " isn't online."));
+				sender.addChatMessage(new ChatComponentText(StatCollector
+						.translateToLocalFormatted("bl.player.online", args[1])));
 				return;
 			}
 			PlayerInformation pro = PlayerInformation.get(player);
@@ -58,8 +59,9 @@ public class MyCommand implements ICommand {
 			PacketHandler.INSTANCE.sendTo(new SyncClientPacket(
 					(EntityPlayerMP) player), (EntityPlayerMP) player);
 			Statics.syncTeams((EntityPlayerMP) player);
-			sender.addChatMessage(new ChatComponentText(player.getDisplayName()
-					+ " is in Team " + pro.getTeam()));
+			sender.addChatMessage(new ChatComponentText(StatCollector
+					.translateToLocalFormatted("bl.player.add",
+							player.getDisplayName(), pro.getTeam())));
 		} else if (args[0].equals("reset")) {
 			if (args[1].equals("quest")) {
 				EntityPlayer player = null;
@@ -72,20 +74,22 @@ public class MyCommand implements ICommand {
 					}
 				}
 				if (player == null) {
-					sender.addChatMessage(new ChatComponentText(args[2]
-							+ " isn't online."));
+					sender.addChatMessage(new ChatComponentText(StatCollector
+							.translateToLocalFormatted("bl.player.online",
+									args[2])));
 					return;
 				}
 				PlayerInformation pro = PlayerInformation.get(player);
 				if (pro.getQuestBools().containsKey(args[3])) {
 					pro.getQuestBools().put(args[3], false);
 					pro.getQuestNums().put(args[3] + "Num", 0);
-					player.addChatMessage(new ChatComponentText("Quest "
-							+ args[3] + " reset."));
+					player.addChatMessage(new ChatComponentText(StatCollector
+							.translateToLocalFormatted("bl.quest.reset",
+									args[3])));
 					return;
 				}
-				sender.addChatMessage(new ChatComponentText("Quest " + args[3]
-						+ " doesn't exist."));
+				sender.addChatMessage(new ChatComponentText(StatCollector
+						.translateToLocalFormatted("bl.quest.exist", args[3])));
 				return;
 			} else if (args[1].equals("layer")) {
 				EntityPlayer player = null;
@@ -98,8 +102,9 @@ public class MyCommand implements ICommand {
 					}
 				}
 				if (player == null) {
-					sender.addChatMessage(new ChatComponentText(args[2]
-							+ " isn't online."));
+					sender.addChatMessage(new ChatComponentText(StatCollector
+							.translateToLocalFormatted("bl.player.online",
+									args[2])));
 					return;
 				}
 				PlayerInformation pro = PlayerInformation.get(player);
@@ -112,12 +117,14 @@ public class MyCommand implements ICommand {
 						}
 
 					}
-					player.addChatMessage(new ChatComponentText("Layer "
-							+ args[3] + " reset."));
+					player.addChatMessage(new ChatComponentText(StatCollector
+							.translateToLocalFormatted("bl.layer.reset",
+									Integer.valueOf(args[3]))));
 					return;
 				}
-				sender.addChatMessage(new ChatComponentText("Quest " + args[3]
-						+ " doesn't exist."));
+				sender.addChatMessage(new ChatComponentText(StatCollector
+						.translateToLocalFormatted("bl.layer.exist",
+								Integer.valueOf(args[3]))));
 				return;
 			}
 		}

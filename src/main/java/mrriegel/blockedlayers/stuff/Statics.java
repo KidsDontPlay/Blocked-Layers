@@ -65,7 +65,7 @@ public class Statics {
 		} else
 			throw new RuntimeException("wrong reward file");
 
-		return stack;
+		return stack.copy();
 	}
 
 	public static void validateQuests(ArrayList<Quest> lis) {

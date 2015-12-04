@@ -19,6 +19,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -76,8 +77,8 @@ public class QuestGui extends GuiScreen {
 		final int blue = 0x3A5FCD;
 		PlayerInformation pro = PlayerInformation.get(mc.thePlayer);
 		sort(pro);
-		String title = pro.getTeam().equals("") ? "No Team" : "Team: "
-				+ pro.getTeam();
+		String title = pro.getTeam().equals("") ? StatCollector
+				.translateToLocal("bl.gui.noteam") : "Team: " + pro.getTeam();
 		fontRendererObj.drawString(title,
 				this.width / 2 - fontRendererObj.getStringWidth(title) / 2,
 				guiTop + 12, 0x000000);
@@ -126,8 +127,7 @@ public class QuestGui extends GuiScreen {
 					double oo2 = ((double) pro.getQuestNums().get(
 							o2.getName() + "Num"))
 							/ ((double) o2.getNumber());
-					return Double.compare(oo1, oo2) * -1;
-					// return oo1 > oo2 ? -1 : 1;
+					return Double.compare(oo2, oo1);
 				}
 			});
 		}
@@ -149,15 +149,14 @@ public class QuestGui extends GuiScreen {
 
 		RenderItem r = new RenderItem();
 		int pos = 178 - 25;
-		double s = (double) pos / (double) (pages - numofentrys)
-				* page + 178.D;
+		double s = (double) pos / (double) (pages - numofentrys) * page + 178.D;
 		r.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(),
 				deco, guiLeft + this.imageWidth - 35, (int) (guiTop + s - pos));
-		drawToolTip(p_73863_1_, p_73863_2_);
+		drawToolTip();
 
 	}
 
-	private void drawToolTip(int param1, int param2) {
+	private void drawToolTip() {
 		int i = Mouse.getX() * this.width / this.mc.displayWidth;
 		int j = this.height - Mouse.getY() * this.height
 				/ this.mc.displayHeight - 1;
@@ -179,7 +178,7 @@ public class QuestGui extends GuiScreen {
 			return;
 		List list = new ArrayList();
 		if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-			list.add("Press SHIFT for more details.");
+			list.add(StatCollector.translateToLocal("bl.gui.shift"));
 		else {
 			String s = qu.getText();
 			List<String> matchList = new ArrayList<String>();
