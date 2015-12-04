@@ -17,8 +17,8 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.7.10-2.0"
-group= "de.mrriegel.blockedlayers" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+version = "1.7.10-2.1"
+group= "mrriegel.blockedlayers" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "BlockedLayers"
 
 minecraft {

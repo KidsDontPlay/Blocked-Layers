@@ -64,6 +64,8 @@ public class Statics {
 			}
 		} else
 			throw new RuntimeException("wrong reward file");
+		if (stack == null)
+			return null;
 
 		return stack.copy();
 	}
