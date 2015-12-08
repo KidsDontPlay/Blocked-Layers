@@ -26,10 +26,13 @@ public class SyncHandler {
 
 	@SubscribeEvent
 	public void join(EntityJoinWorldEvent e) {
+		if (e.world.isRemote)
+			return;
 		if (e.entity instanceof EntityPlayerMP) {
 			PacketHandler.INSTANCE.sendTo(new SyncClientPacket(
 					(EntityPlayerMP) e.entity), (EntityPlayerMP) e.entity);
-			Statics.syncTeams((EntityPlayerMP) e.entity);
+			Statics.syncTeams(PlayerInformation.get((EntityPlayer) e.entity)
+					.getTeam());
 		}
 	}
 

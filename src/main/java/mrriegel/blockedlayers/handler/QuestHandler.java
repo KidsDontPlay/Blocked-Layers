@@ -15,15 +15,12 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
-import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -48,14 +45,14 @@ public class QuestHandler {
 		return true;
 	}
 
-	void finish(EntityPlayer player, Quest q) {
+	public void finish(EntityPlayer player, Quest q) {
 		PlayerInformation pro = PlayerInformation.get(player);
 		String name = q.getName();
 		pro.getQuestBools().put(name, true);
 		pro.getQuestNums().put(name + "Num", q.getNumber());
 		player.addChatMessage(new ChatComponentText(StatCollector
 				.translateToLocalFormatted("bl.quest.done", name)));
-		Statics.syncTeams((EntityPlayerMP) player);
+
 	}
 
 	@SubscribeEvent
@@ -86,6 +83,7 @@ public class QuestHandler {
 						pro.getQuestNums().get(name + "Num") + 1);
 				if (pro.getQuestNums().get(name + "Num") >= number) {
 					finish(player, q);
+					Statics.syncTeams(pro.getTeam());
 				}
 			}
 		}
@@ -123,6 +121,7 @@ public class QuestHandler {
 						pro.getQuestNums().get(name + "Num") + 1);
 				if (pro.getQuestNums().get(name + "Num") >= number) {
 					finish(player, q);
+					Statics.syncTeams(pro.getTeam());
 				}
 			}
 		}
@@ -157,6 +156,7 @@ public class QuestHandler {
 						pro.getQuestNums().get(name + "Num") + 1);
 				if (pro.getQuestNums().get(name + "Num") >= number) {
 					finish(player, q);
+					Statics.syncTeams(pro.getTeam());
 				}
 			}
 		}
@@ -194,6 +194,7 @@ public class QuestHandler {
 									+ stack.copy().stackSize);
 					if (pro.getQuestNums().get(name + "Num") >= number) {
 						finish(player, q);
+						Statics.syncTeams(pro.getTeam());
 					}
 				}
 			}
@@ -233,6 +234,7 @@ public class QuestHandler {
 									+ stack.stackSize);
 					if (pro.getQuestNums().get(name + "Num") >= number) {
 						finish(player, q);
+						Statics.syncTeams(pro.getTeam());
 					}
 				}
 			}
@@ -282,6 +284,7 @@ public class QuestHandler {
 					player.inventoryContainer.detectAndSendChanges();
 				}
 				finish(player, q);
+				Statics.syncTeams(pro.getTeam());
 			}
 		}
 	}
@@ -355,6 +358,7 @@ public class QuestHandler {
 					pro.getQuestNums().get(name + "Num") + event.orb.xpValue);
 			if (pro.getQuestNums().get(name + "Num") >= number) {
 				finish(player, q);
+				Statics.syncTeams(pro.getTeam());
 			}
 		}
 	}
@@ -377,6 +381,7 @@ public class QuestHandler {
 			String biom = q.getObject();
 			if (biom.equalsIgnoreCase(currentBiom)) {
 				finish(player, q);
+				Statics.syncTeams(pro.getTeam());
 			}
 		}
 	}
@@ -436,6 +441,7 @@ public class QuestHandler {
 											: oriStack.stackSize));
 			if (pro.getQuestNums().get(name + "Num") >= number) {
 				finish(player, q);
+				Statics.syncTeams(pro.getTeam());
 			}
 		}
 	}
@@ -461,9 +467,9 @@ public class QuestHandler {
 				player.addChatMessage(new ChatComponentText(StatCollector
 						.translateToLocalFormatted("bl.layer.done",
 								entry.getKey())));
+				if (!ConfigurationHandler.reward)
+					continue;
 				for (Reward r : BlockedLayers.instance.rewardList) {
-					if (!ConfigurationHandler.reward)
-						break;
 					if (r.getLayer() == entry.getKey()) {
 						ArrayList<ItemStack> tmp = new ArrayList<ItemStack>();
 						for (String s : r.getRewards()) {

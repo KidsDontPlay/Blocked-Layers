@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import mrriegel.blockedlayers.handler.GuiHandler;
@@ -20,7 +20,6 @@ import mrriegel.blockedlayers.stuff.MyCommand;
 import mrriegel.blockedlayers.stuff.Quest;
 import mrriegel.blockedlayers.stuff.Reward;
 import mrriegel.blockedlayers.stuff.Statics;
-import net.minecraft.entity.EntityList;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.google.common.reflect.TypeToken;
@@ -34,8 +33,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.ModListHelper;
 
 @Mod(modid = BlockedLayers.MOD_ID, name = BlockedLayers.MOD_NAME, version = BlockedLayers.VERSION)
 public class BlockedLayers {
@@ -52,6 +49,7 @@ public class BlockedLayers {
 	public static CommonProxy proxy;
 
 	public ArrayList<Quest> questList;
+	public HashMap<String, Quest> questMap;
 	public ArrayList<Reward> rewardList;
 
 	@Mod.EventHandler
@@ -71,6 +69,9 @@ public class BlockedLayers {
 		questList = new Gson().fromJson(new BufferedReader(new FileReader(
 				questFile)), new TypeToken<ArrayList<Quest>>() {
 		}.getType());
+		questMap = new HashMap<String, Quest>();
+		for (Quest q : questList)
+			questMap.put(q.getName(), q);
 
 		File rewardFile = new File(configDir, "rewards.json");
 		if (!rewardFile.exists()) {

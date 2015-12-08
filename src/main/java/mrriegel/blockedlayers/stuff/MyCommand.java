@@ -8,7 +8,6 @@ import mrriegel.blockedlayers.handler.PacketHandler;
 import mrriegel.blockedlayers.packet.SyncClientPacket;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -39,6 +38,8 @@ public class MyCommand implements ICommand {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) {
+		if (sender.getEntityWorld().isRemote)
+			return;
 		if (args[0].equals("team")) {
 			EntityPlayer player = null;
 			for (Object o : MinecraftServer.getServer()
@@ -58,10 +59,10 @@ public class MyCommand implements ICommand {
 			pro.setTeam(args[2]);
 			PacketHandler.INSTANCE.sendTo(new SyncClientPacket(
 					(EntityPlayerMP) player), (EntityPlayerMP) player);
-			Statics.syncTeams((EntityPlayerMP) player);
 			sender.addChatMessage(new ChatComponentText(StatCollector
 					.translateToLocalFormatted("bl.player.add",
 							player.getDisplayName(), pro.getTeam())));
+			Statics.syncTeams(pro.getTeam());
 		} else if (args[0].equals("reset")) {
 			if (args[1].equals("quest")) {
 				EntityPlayer player = null;

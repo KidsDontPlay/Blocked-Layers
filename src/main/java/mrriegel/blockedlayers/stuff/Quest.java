@@ -49,4 +49,11 @@ public class Quest {
 		return number;
 	}
 
+	@Override
+	public String toString() {
+		return "Quest [name=" + name + ", activity=" + activity + ", object="
+				+ object + ", modID=" + modID + ", text=" + text + ", layer="
+				+ layer + ", meta=" + meta + ", number=" + number + "]";
+	}
+
 }

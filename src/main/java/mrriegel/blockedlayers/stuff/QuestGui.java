@@ -86,7 +86,7 @@ public class QuestGui extends GuiScreen {
 			String name = qus.get(i).getName();
 			fontRendererObj.drawString(qus.get(i).getLayer() + ": " + name
 					+ " " + pro.getQuestNums().get(name + "Num") + "/"
-					+ qus.get(i).getNumber(), guiLeft + 18, guiTop / 2 + 30
+					+ qus.get(i).getNumber(), guiLeft + 18, guiTop + 30
 					+ (fontRendererObj.FONT_HEIGHT + 4) * in, pro
 					.getQuestBools().get(name) ? blue : red);
 			in++;
@@ -146,12 +146,17 @@ public class QuestGui extends GuiScreen {
 
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
 		drawMaps();
-
-		RenderItem r = new RenderItem();
-		int pos = 178 - 25;
-		double s = (double) pos / (double) (pages - numofentrys) * page + 178.D;
-		r.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(),
-				deco, guiLeft + this.imageWidth - 35, (int) (guiTop + s - pos));
+		if (qus.size() > numofentrys) {
+			// drawVerticalLine(guiLeft + this.imageWidth
+			// - 35, 25, 178, 0x4f4f4f);
+			RenderItem r = new RenderItem();
+			int pos = 178 - 25;
+			double s = (double) pos / (double) (pages - numofentrys) * page
+					+ 178.D;
+			r.renderItemAndEffectIntoGUI(fontRendererObj,
+					mc.getTextureManager(), deco, guiLeft + this.imageWidth
+							- 35, (int) (guiTop + s - pos));
+		}
 		drawToolTip();
 
 	}

@@ -1,5 +1,7 @@
 package mrriegel.blockedlayers.stuff;
 
+import static mrriegel.blockedlayers.BlockedLayers.instance;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,10 +11,12 @@ import java.util.Map.Entry;
 
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
+import mrriegel.blockedlayers.handler.QuestHandler;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,30 +26,35 @@ import com.google.gson.Gson;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class Statics {
-	public static void syncTeams(EntityPlayerMP player) {
-		if (!ConfigurationHandler.teams || player.worldObj.isRemote
-				|| PlayerInformation.get(player) == null)
-			return;
-		String ori = PlayerInformation.get(player).getTeam();
-		if (ori.equals(""))
+	public static void syncTeams(String team) {
+		if (!ConfigurationHandler.teams || team.equals(""))
 			return;
 		ArrayList<EntityPlayerMP> players = new ArrayList<EntityPlayerMP>();
-		ArrayList<Boolean> bools = new ArrayList<Boolean>();
 		for (Object o : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
 			EntityPlayerMP p = (EntityPlayerMP) o;
-			if (ori.equals(PlayerInformation.get(p).getTeam()))
+			if (team.equals(PlayerInformation.get(p).getTeam()))
 				players.add(p);
 		}
-		HashMap<String, Boolean> fake = new PlayerInformation().getQuestBools();
+
+		HashMap<String, Integer> fake2 = new PlayerInformation().getQuestNums();
 		for (EntityPlayerMP pp : players) {
-			for (Entry<String, Boolean> entry : PlayerInformation.get(pp)
-					.getQuestBools().entrySet()) {
-				if (entry.getValue())
-					fake.put(entry.getKey(), true);
+			for (Entry<String, Integer> entry : PlayerInformation.get(pp)
+					.getQuestNums().entrySet()) {
+				if (entry.getValue() > fake2.get(entry.getKey()))
+					fake2.put(entry.getKey(), entry.getValue());
 			}
 		}
+
 		for (EntityPlayerMP pp : players) {
-			PlayerInformation.get(pp).setQuestBools(fake);
+			PlayerInformation.get(pp).setQuestNums(fake2);
+			for (Quest q : instance.questList) {
+				if (!PlayerInformation.get(pp).getQuestBools().get(q.getName())
+						&& PlayerInformation.get(pp).getQuestNums()
+								.get(q.getName() + "Num") >= q.getNumber())
+					new QuestHandler().finish(pp, q);
+			}
+			new QuestHandler().release(new PlayerInteractEvent(pp, null, 0, 0,
+					0, 0, pp.worldObj));
 		}
 	}
 
@@ -63,7 +72,7 @@ public class Statics {
 				stack.stackSize = Integer.valueOf(s.split(":")[1]);
 			}
 		} else
-			throw new RuntimeException("wrong reward file");
+			throw new RuntimeException("Wrong reward file");
 		if (stack == null)
 			return null;
 
@@ -151,7 +160,7 @@ public class Statics {
 								"minecraft:cooked_beef:0:10" }))));
 		ttt.add(new Reward(12, new ArrayList<String>(Arrays
 				.asList(new String[] { "minecraft:golden_apple:0:5",
-						"minecraft:golden_apple:1:1" }))));
+						"minecraft:golden_apple:1:1", "blockDiamond:8" }))));
 		fw.write(new Gson().toJson(ttt));
 	}
 }

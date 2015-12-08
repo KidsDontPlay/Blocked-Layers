@@ -68,6 +68,5 @@ public class SyncClientPacket implements IMessage,
 		ByteBufUtils.writeUTF8String(buf, qb);
 		ByteBufUtils.writeUTF8String(buf, qn);
 		ByteBufUtils.writeUTF8String(buf, team);
-
 	}
 }
