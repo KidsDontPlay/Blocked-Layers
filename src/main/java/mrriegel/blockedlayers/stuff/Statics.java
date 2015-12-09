@@ -22,6 +22,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -147,7 +148,7 @@ public class Statics {
 				12));
 		tmp.add(new Quest("charcoal", "craft", "coal", "minecraft", "fuel", 54,
 				1, 8));
-		fw.write(new Gson().toJson(tmp));
+		fw.write(new GsonBuilder().setPrettyPrinting().create().toJson(tmp));
 	}
 
 	public static void fillRewardsFirst(FileWriter fw) throws IOException {
@@ -161,6 +162,6 @@ public class Statics {
 		ttt.add(new Reward(12, new ArrayList<String>(Arrays
 				.asList(new String[] { "minecraft:golden_apple:0:5",
 						"minecraft:golden_apple:1:1", "blockDiamond:8" }))));
-		fw.write(new Gson().toJson(ttt));
+		fw.write(new GsonBuilder().setPrettyPrinting().create().toJson(ttt));
 	}
 }

@@ -21,6 +21,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -477,8 +479,13 @@ public class QuestHandler {
 								tmp.add(Statics.string2Stack(s));
 						}
 						for (ItemStack s : tmp) {
-							if (!player.inventory.addItemStackToInventory(s))
-								player.dropPlayerItemWithRandomChoice(s, false);
+							if (!player.inventory.addItemStackToInventory(s)) {
+								EntityItem entityitem = new EntityItem(
+										player.worldObj, player.posX + 0.5D,
+										player.posY + 0.5D, player.posZ + 0.5D,
+										s);
+								event.world.spawnEntityInWorld(entityitem);
+							}
 						}
 					}
 				}

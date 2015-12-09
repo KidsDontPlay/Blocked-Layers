@@ -38,7 +38,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 public class BlockedLayers {
 	public static final String MOD_ID = "BlockedLayers";
 	public static final String MOD_NAME = "Blocked Layers";
-	public static final String VERSION = "1.7.10-2.1";
+	public static final String VERSION = "1.7.10-2.2";
 	public static final String CLIENT_PROXY_CLASS = "mrriegel.blockedlayers.proxy.ClientProxy";
 	public static final String COMMON_PROXY_CLASS = "mrriegel.blockedlayers.proxy.CommonProxy";
 

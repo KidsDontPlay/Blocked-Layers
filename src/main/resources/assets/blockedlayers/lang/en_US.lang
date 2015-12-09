@@ -13,4 +13,4 @@ bl.layer.reset=Layer %d was reset.
 bl.layer.exist=Layer %d doesn't exist.
 
 bl.gui.noteam=No team
-bl.gui.shift=Press SHIFT for more details.
+bl.gui.shift=Hold SHIFT for more details.

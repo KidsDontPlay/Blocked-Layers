@@ -11,8 +11,10 @@ import java.util.regex.Pattern;
 
 import mrriegel.blockedlayers.BlockedLayers;
 import mrriegel.blockedlayers.entity.PlayerInformation;
+import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -77,11 +79,14 @@ public class QuestGui extends GuiScreen {
 		final int blue = 0x3A5FCD;
 		PlayerInformation pro = PlayerInformation.get(mc.thePlayer);
 		sort(pro);
-		String title = pro.getTeam().equals("") ? StatCollector
-				.translateToLocal("bl.gui.noteam") : "Team: " + pro.getTeam();
-		fontRendererObj.drawString(title,
-				this.width / 2 - fontRendererObj.getStringWidth(title) / 2,
-				guiTop + 12, 0x000000);
+		if (ConfigurationHandler.teams) {
+			String title = pro.getTeam().equals("") ? StatCollector
+					.translateToLocal("bl.gui.noteam") : "Team: "
+					+ pro.getTeam();
+			fontRendererObj.drawString(title,
+					this.width / 2 - fontRendererObj.getStringWidth(title) / 2,
+					guiTop + 12, 0x000000);
+		}
 		for (int i = page; i < page + numofentrys && i < qus.size(); i++) {
 			String name = qus.get(i).getName();
 			fontRendererObj.drawString(qus.get(i).getLayer() + ": " + name
@@ -147,8 +152,26 @@ public class QuestGui extends GuiScreen {
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
 		drawMaps();
 		if (qus.size() > numofentrys) {
-			// drawVerticalLine(guiLeft + this.imageWidth
-			// - 35, 25, 178, 0x4f4f4f);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glDepthMask(false);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawing(GL11.GL_QUADS);
+			tessellator.setColorRGBA(117, 50, 30, 255);
+			tessellator.addVertex(guiLeft + this.imageWidth - 28,
+					guiTop + 25 + 8, 0);// lo
+			tessellator.addVertex(guiLeft + this.imageWidth - 28,
+					guiTop + 178 + 8, 0);// lu
+			tessellator.addVertex(guiLeft + this.imageWidth - 26,
+					guiTop + 178 + 8, 0);// ru
+			tessellator.addVertex(guiLeft + this.imageWidth - 26,
+					guiTop + 25 + 8, 0);// ro
+			tessellator.draw();
+			GL11.glDepthMask(true);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			RenderItem r = new RenderItem();
 			int pos = 178 - 25;
 			double s = (double) pos / (double) (pages - numofentrys) * page
