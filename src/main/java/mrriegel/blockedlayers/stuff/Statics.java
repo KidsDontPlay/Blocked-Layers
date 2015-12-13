@@ -21,7 +21,6 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -87,7 +86,8 @@ public class Statics {
 				throw new RuntimeException(q.getName() + " isn't unique");
 			names.add(q.getName());
 			if (q.getName().length() > 16)
-				throw new RuntimeException(q.getName() + " is longer than 16");
+				throw new RuntimeException(q.getName()
+						+ " is longer than 16 characters");
 			boolean item = false, block = false, entity = false;
 			if (GameRegistry.findItem(q.getModID(), q.getObject()) != null
 					|| q.getObject() == null || q.getModID() == null)
@@ -98,7 +98,7 @@ public class Statics {
 			if (EntityList.stringToClassMapping.containsKey(q.getObject())
 					|| q.getObject() == null || q.getModID() == null)
 				entity = true;
-			if (!item && !block && !entity)
+			if (!item && !block && !entity && !q.getActivity().equals("find"))
 				throw new RuntimeException(q.getObject() + " doesn't exist");
 			if (q.getLayer() < 1 || q.getLayer() > 255)
 				throw new RuntimeException("layer out of range 1-255");

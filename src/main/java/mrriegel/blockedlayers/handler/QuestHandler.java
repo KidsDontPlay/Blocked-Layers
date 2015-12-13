@@ -21,8 +21,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -486,7 +484,9 @@ public class QuestHandler {
 										s);
 								event.world.spawnEntityInWorld(entityitem);
 							}
+
 						}
+						player.openContainer.detectAndSendChanges();
 					}
 				}
 			}
