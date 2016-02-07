@@ -21,24 +21,22 @@ import mrriegel.blockedlayers.stuff.Quest;
 import mrriegel.blockedlayers.stuff.Reward;
 import mrriegel.blockedlayers.stuff.Statics;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(modid = BlockedLayers.MOD_ID, name = BlockedLayers.MOD_NAME, version = BlockedLayers.VERSION)
 public class BlockedLayers {
 	public static final String MOD_ID = "BlockedLayers";
 	public static final String MOD_NAME = "Blocked Layers";
-	public static final String VERSION = "1.7.10-2.2";
+	public static final String VERSION = "2.2";
 	public static final String CLIENT_PROXY_CLASS = "mrriegel.blockedlayers.proxy.ClientProxy";
 	public static final String COMMON_PROXY_CLASS = "mrriegel.blockedlayers.proxy.CommonProxy";
 
@@ -93,11 +91,10 @@ public class BlockedLayers {
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(new LayerHandler());
 		MinecraftForge.EVENT_BUS.register(new QuestHandler());
-		FMLCommonHandler.instance().bus().register(new QuestHandler());
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
 		MinecraftForge.EVENT_BUS.register(new SyncHandler());
 		MinecraftForge.EVENT_BUS.register(this);
-		FMLCommonHandler.instance().bus().register(new KeyHandler());
+		MinecraftForge.EVENT_BUS.register(new KeyHandler());
 		proxy.registerHandlers();
 
 	}

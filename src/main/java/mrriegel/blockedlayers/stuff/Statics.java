@@ -12,18 +12,18 @@ import java.util.Map.Entry;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import mrriegel.blockedlayers.handler.QuestHandler;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.GsonBuilder;
-
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class Statics {
 	public static void syncTeams(String team) {
@@ -53,18 +53,20 @@ public class Statics {
 								.get(q.getName() + "Num") >= q.getNumber())
 					new QuestHandler().finish(pp, q);
 			}
-			new QuestHandler().release(new PlayerInteractEvent(pp, null, 0, 0,
-					0, 0, pp.worldObj));
+
+			new QuestHandler().release(new PlayerInteractEvent(pp, null,
+					BlockPos.ORIGIN, EnumFacing.DOWN, pp.worldObj));
 		}
 	}
 
 	public static ItemStack string2Stack(String s) {
 		ItemStack stack = null;
 		if (StringUtils.countMatches(s, ":") == 3) {
-			stack = GameRegistry.findItemStack(s.split(":")[0],
-					s.split(":")[1], Integer.valueOf(s.split(":")[3]));
+			stack = new ItemStack(GameRegistry.findItem(s.split(":")[0],
+					s.split(":")[1]));
 			if (stack != null) {
 				stack.setItemDamage(Integer.valueOf(s.split(":")[2]));
+				stack.stackSize = Integer.valueOf(s.split(":")[3]);
 			}
 		} else if (StringUtils.countMatches(s, ":") == 1) {
 			if (OreDictionary.doesOreNameExist(s.split(":")[0])) {
@@ -88,18 +90,19 @@ public class Statics {
 			if (q.getName().length() > 16)
 				throw new RuntimeException(q.getName()
 						+ " is longer than 16 characters");
-			boolean item = false, block = false, entity = false;
-			if (GameRegistry.findItem(q.getModID(), q.getObject()) != null
-					|| q.getObject() == null || q.getModID() == null)
-				item = true;
-			if (GameRegistry.findBlock(q.getModID(), q.getObject()) != null
-					|| q.getObject() == null || q.getModID() == null)
-				block = true;
-			if (EntityList.stringToClassMapping.containsKey(q.getObject())
-					|| q.getObject() == null || q.getModID() == null)
-				entity = true;
-			if (!item && !block && !entity && !q.getActivity().equals("find"))
-				throw new RuntimeException(q.getObject() + " doesn't exist");
+			// boolean item = false, block = false, entity = false;
+			// if (GameRegistry.findItem(q.getModID(), q.getObject()) != null
+			// || q.getObject() == null || q.getModID() == null)
+			// item = true;
+			// if (GameRegistry.findBlock(q.getModID(), q.getObject()) != null
+			// || q.getObject() == null || q.getModID() == null)
+			// block = true;
+			// if (EntityList.stringToClassMapping.containsKey(q.getObject())
+			// || q.getObject() == null || q.getModID() == null)
+			// entity = true;
+			// if (!item && !block && !entity &&
+			// !q.getActivity().equals("find"))
+			// throw new RuntimeException(q.getObject() + " doesn't exist");
 			if (q.getLayer() < 1 || q.getLayer() > 255)
 				throw new RuntimeException("layer out of range 1-255");
 		}

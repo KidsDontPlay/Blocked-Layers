@@ -1,5 +1,6 @@
 package mrriegel.blockedlayers.stuff;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,7 +15,6 @@ import mrriegel.blockedlayers.entity.PlayerInformation;
 import mrriegel.blockedlayers.handler.ConfigurationHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -99,7 +99,7 @@ public class QuestGui extends GuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton p_146284_1_) {
+	protected void actionPerformed(GuiButton p_146284_1_) throws IOException {
 		super.actionPerformed(p_146284_1_);
 		if (p_146284_1_.id == 0) {
 			mode = mode.next();
@@ -157,28 +157,27 @@ public class QuestGui extends GuiScreen {
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDepthMask(false);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			Tessellator tessellator = Tessellator.instance;
-			tessellator.startDrawing(GL11.GL_QUADS);
-			tessellator.setColorRGBA(117, 50, 30, 255);
-			tessellator.addVertex(guiLeft + this.imageWidth - 28,
-					guiTop + 25 + 8, 0);// lo
-			tessellator.addVertex(guiLeft + this.imageWidth - 28,
-					guiTop + 178 + 8, 0);// lu
-			tessellator.addVertex(guiLeft + this.imageWidth - 26,
-					guiTop + 178 + 8, 0);// ru
-			tessellator.addVertex(guiLeft + this.imageWidth - 26,
-					guiTop + 25 + 8, 0);// ro
-			tessellator.draw();
+			// Tessellator tessellator = Tessellator.instance;
+			// tessellator.startDrawing(GL11.GL_QUADS);
+			// tessellator.setColorRGBA(117, 50, 30, 255);
+			// tessellator.addVertex(guiLeft + this.imageWidth - 28,
+			// guiTop + 25 + 8, 0);// lo
+			// tessellator.addVertex(guiLeft + this.imageWidth - 28,
+			// guiTop + 178 + 8, 0);// lu
+			// tessellator.addVertex(guiLeft + this.imageWidth - 26,
+			// guiTop + 178 + 8, 0);// ru
+			// tessellator.addVertex(guiLeft + this.imageWidth - 26,
+			// guiTop + 25 + 8, 0);// ro
+			// tessellator.draw();
 			GL11.glDepthMask(true);
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			RenderItem r = new RenderItem();
+			RenderItem r = mc.getRenderItem();
 			int pos = 178 - 25;
 			double s = (double) pos / (double) (pages - numofentrys) * page
 					+ 178.D;
-			r.renderItemAndEffectIntoGUI(fontRendererObj,
-					mc.getTextureManager(), deco, guiLeft + this.imageWidth
-							- 35, (int) (guiTop + s - pos));
+			r.renderItemAndEffectIntoGUI(deco, guiLeft + this.imageWidth - 35,
+					(int) (guiTop + s - pos));
 		}
 		drawToolTip();
 
@@ -226,7 +225,7 @@ public class QuestGui extends GuiScreen {
 	}
 
 	@Override
-	public void handleMouseInput() {
+	public void handleMouseInput() throws IOException {
 		super.handleMouseInput();
 		int i = Mouse.getX() * this.width / this.mc.displayWidth;
 		int j = this.height - Mouse.getY() * this.height

@@ -19,6 +19,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -28,10 +29,10 @@ import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class QuestHandler {
 
@@ -110,13 +111,13 @@ public class QuestHandler {
 			Block target = GameRegistry.findBlock(q.getModID(), q.getObject());
 			int meta;
 			if (q.getMeta() == -1) {
-				meta = event.blockMetadata;
+				meta = event.state.getBlock().getMetaFromState(event.state);
 			} else {
 				meta = q.getMeta();
 			}
 			int number = q.getNumber();
-
-			if (event.block.equals(target) && event.blockMetadata == meta) {
+			if (event.state.getBlock() == target
+					&& event.state.getBlock().getMetaFromState(event.state) == meta) {
 				pro.getQuestNums().put(name + "Num",
 						pro.getQuestNums().get(name + "Num") + 1);
 				if (pro.getQuestNums().get(name + "Num") >= number) {
@@ -142,7 +143,7 @@ public class QuestHandler {
 				continue;
 			}
 
-			Class target = (Class) EntityList.stringToClassMapping.get(q
+			Class target = EntityList.stringToClassMapping.get(q
 					.getObject());
 
 			int number = q.getNumber();
@@ -369,8 +370,9 @@ public class QuestHandler {
 			return;
 		EntityPlayer player = event.entityPlayer;
 		PlayerInformation pro = PlayerInformation.get(player);
-		String currentBiom = event.world.getWorldChunkManager().getBiomeGenAt(
-				event.x, event.z).biomeName;
+		String currentBiom = event.world.getWorldChunkManager()
+				.getBiomeGenerator(
+						new BlockPos(event.pos.getX(), 0, event.pos.getZ())).biomeName;
 		for (Quest q : BlockedLayers.instance.questList) {
 			String name = q.getName();
 			if (!q.getActivity().equals("find") || !questValid(pro, q)

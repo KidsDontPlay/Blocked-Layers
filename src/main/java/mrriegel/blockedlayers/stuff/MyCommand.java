@@ -1,5 +1,6 @@
 package mrriegel.blockedlayers.stuff;
 
+import java.util.Collections;
 import java.util.List;
 
 import mrriegel.blockedlayers.BlockedLayers;
@@ -11,15 +12,11 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 
 public class MyCommand implements ICommand {
-
-	@Override
-	public int compareTo(Object o) {
-		return 0;
-	}
 
 	@Override
 	public String getCommandName() {
@@ -33,7 +30,7 @@ public class MyCommand implements ICommand {
 
 	@Override
 	public List getCommandAliases() {
-		return null;
+		return Collections.EMPTY_LIST;
 	}
 
 	@Override
@@ -45,7 +42,7 @@ public class MyCommand implements ICommand {
 			for (Object o : MinecraftServer.getServer()
 					.getConfigurationManager().playerEntityList) {
 				EntityPlayer p = (EntityPlayer) o;
-				if (p.getDisplayName().equals(args[1])) {
+				if (p.getDisplayNameString().equals(args[1])) {
 					player = p;
 					break;
 				}
@@ -61,7 +58,7 @@ public class MyCommand implements ICommand {
 					(EntityPlayerMP) player), (EntityPlayerMP) player);
 			sender.addChatMessage(new ChatComponentText(StatCollector
 					.translateToLocalFormatted("bl.player.add",
-							player.getDisplayName(), pro.getTeam())));
+							player.getDisplayNameString(), pro.getTeam())));
 			Statics.syncTeams(pro.getTeam());
 		} else if (args[0].equals("reset")) {
 			if (args[1].equals("quest")) {
@@ -69,11 +66,12 @@ public class MyCommand implements ICommand {
 				for (Object o : MinecraftServer.getServer()
 						.getConfigurationManager().playerEntityList) {
 					EntityPlayer p = (EntityPlayer) o;
-					if (p.getDisplayName().equals(args[2])) {
+					if (p.getDisplayNameString().equals(args[2])) {
 						player = p;
 						break;
 					}
 				}
+
 				if (player == null) {
 					sender.addChatMessage(new ChatComponentText(StatCollector
 							.translateToLocalFormatted("bl.player.online",
@@ -97,7 +95,7 @@ public class MyCommand implements ICommand {
 				for (Object o : MinecraftServer.getServer()
 						.getConfigurationManager().playerEntityList) {
 					EntityPlayer p = (EntityPlayer) o;
-					if (p.getDisplayName().equals(args[2])) {
+					if (p.getDisplayNameString().equals(args[2])) {
 						player = p;
 						break;
 					}
@@ -138,19 +136,25 @@ public class MyCommand implements ICommand {
 			EntityPlayer player = (EntityPlayer) sender;
 			return MinecraftServer.getServer().isSinglePlayer()
 					|| MinecraftServer.getServer().getConfigurationManager()
-							.func_152596_g(player.getGameProfile());
+							.canSendCommands(player.getGameProfile());
 		}
 		return true;
 	}
 
 	@Override
-	public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-		return null;
+	public boolean isUsernameIndex(String[] args, int var) {
+		return false;
 	}
 
 	@Override
-	public boolean isUsernameIndex(String[] args, int var) {
-		return false;
+	public int compareTo(ICommand o) {
+		return 0;
+	}
+
+	@Override
+	public List<String> addTabCompletionOptions(ICommandSender sender,
+			String[] args, BlockPos pos) {
+		return null;
 	}
 
 }

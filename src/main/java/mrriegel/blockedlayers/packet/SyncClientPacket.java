@@ -7,14 +7,14 @@ import java.util.HashMap;
 import mrriegel.blockedlayers.entity.PlayerInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.IThreadListener;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class SyncClientPacket implements IMessage,
 		IMessageHandler<SyncClientPacket, IMessage> {
@@ -35,13 +35,19 @@ public class SyncClientPacket implements IMessage,
 	}
 
 	@Override
-	public IMessage onMessage(SyncClientPacket message, MessageContext ctx) {
-		PlayerInformation pro = PlayerInformation
-				.get(Minecraft.getMinecraft().thePlayer);
-		pro.setLayerBools(message.layerBools);
-		pro.setQuestBools(message.questBools);
-		pro.setQuestNums(message.questNums);
-		pro.setTeam(message.team);
+	public IMessage onMessage(final SyncClientPacket message, MessageContext ctx) {
+		IThreadListener mainThread = Minecraft.getMinecraft();
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				PlayerInformation pro = PlayerInformation.get(Minecraft
+						.getMinecraft().thePlayer);
+				pro.setLayerBools(message.layerBools);
+				pro.setQuestBools(message.questBools);
+				pro.setQuestNums(message.questNums);
+				pro.setTeam(message.team);
+			}
+		});
 		return null;
 	}
 

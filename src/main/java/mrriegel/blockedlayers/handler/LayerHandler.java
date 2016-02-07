@@ -6,16 +6,16 @@ import mrriegel.blockedlayers.entity.PlayerInformation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.world.BlockEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class LayerHandler {
 
 	@SubscribeEvent
 	public void disallow(BlockEvent.BreakEvent event) {
 		boolean currentBlacklisted = isIn(ConfigurationHandler.dimensionBlack,
-				event.world.provider.dimensionId);
+				event.world.provider.getDimensionId());
 		boolean currentWhitelisted = isIn(ConfigurationHandler.dimensionWhite,
-				event.world.provider.dimensionId);
+				event.world.provider.getDimensionId());
 		String bool = ConfigurationHandler.dimensionBlack.length == 0 ? ConfigurationHandler.dimensionWhite.length == 0 ? "nothing"
 				: "white"
 				: "black";
@@ -32,7 +32,7 @@ public class LayerHandler {
 			if (entry.getValue()) {
 				continue;
 			}
-			if (event.y < entry.getKey() + 1) {
+			if (event.pos.getY() < entry.getKey() + 1) {
 				event.setCanceled(true);
 				return;
 			}
